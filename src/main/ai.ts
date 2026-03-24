@@ -40,7 +40,7 @@ export async function transcribeWithDiarization(audioData: Buffer, language?: st
     body: JSON.stringify({
       audio_url: upload_url,
       speaker_labels: true,
-      speech_model: 'nano',
+      speech_models: ['nano'],
       ...(lang ? { language_code: lang } : {}),
     }),
   });
