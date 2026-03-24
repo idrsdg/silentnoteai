@@ -9,9 +9,16 @@ if (started) app.quit();
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
+function getIconPath(): string {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'icon.ico');
+  }
+  // Geliştirme: __dirname = .vite/build/, iki üst dizin = proje kökü
+  return path.join(__dirname, '../../assets/icon.ico');
+}
+
 const createTray = () => {
-  // Küçük bir PNG icon oluştur (16x16 boş, platform kendi ikonunu kullanır)
-  const icon = nativeImage.createEmpty();
+  const icon = nativeImage.createFromPath(getIconPath());
   tray = new Tray(icon);
   tray.setToolTip('Silent Note AI');
 
@@ -51,6 +58,7 @@ const createWindow = () => {
     minHeight: 560,
     backgroundColor: '#0f0f0f',
     titleBarStyle: 'hiddenInset',
+    icon: getIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

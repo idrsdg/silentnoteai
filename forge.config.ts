@@ -12,10 +12,15 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     executableName: 'silent-note-ai',
+    icon: './assets/icon',
+    extraResource: ['./assets/icon.ico'],
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      setupIcon: './assets/icon.ico',
+      iconUrl: 'https://raw.githubusercontent.com/idrsdg/silentnoteai/master/assets/icon.ico',
+    }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),

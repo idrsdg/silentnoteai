@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Generate icons
+        run: npm run gen-icon
+
       - name: Build Windows
         run: npm run make -- --platform=win32
         env:
@@ -43,6 +46,9 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Generate icons
+        run: npm run gen-icon
+
       - name: Build macOS
         run: npm run make -- --platform=darwin
         env:
@@ -64,6 +70,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: Generate icons
+        run: npm run gen-icon
 
       - name: Build Linux
         run: npm run make -- --platform=linux
