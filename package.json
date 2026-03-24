@@ -1,7 +1,7 @@
 {
   "name": "silent-note-ai",
   "productName": "Silent Note AI",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Toplantılarını gizlice kaydet, AI ile özetle",
   "repository": "https://github.com/idrsdg/silentnoteai",
   "main": ".vite/build/main.js",
@@ -51,7 +51,6 @@
     "openai": "^6.32.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "sql.js": "^1.14.1",
     "update-electron-app": "^3.1.2"
   }
 }

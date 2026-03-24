@@ -5,7 +5,6 @@ import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
-import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
 const config: ForgeConfig = {
@@ -13,7 +12,7 @@ const config: ForgeConfig = {
     asar: true,
     executableName: 'silent-note-ai',
     icon: './assets/icon',
-    extraResource: ['./assets/icon.ico', './node_modules/sql.js/dist/sql-wasm.wasm'],
+    extraResource: ['./assets/icon.ico'],
   },
   rebuildConfig: {},
   makers: [
@@ -26,7 +25,6 @@ const config: ForgeConfig = {
     new MakerDeb({}),
   ],
   plugins: [
-    new AutoUnpackNativesPlugin({}),
     new VitePlugin({
       build: [
         {
