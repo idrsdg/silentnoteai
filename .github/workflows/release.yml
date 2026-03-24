@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Rebuild native modules
-        run: npx electron-rebuild --force
-
       - name: Generate icons
         run: npm run gen-icon
 
@@ -49,9 +46,6 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Rebuild native modules
-        run: npx electron-rebuild --force
-
       - name: Generate icons
         run: npm run gen-icon
 
@@ -76,9 +70,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
-      - name: Rebuild native modules
-        run: npx electron-rebuild --force
 
       - name: Generate icons
         run: npm run gen-icon
