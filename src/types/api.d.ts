@@ -39,13 +39,14 @@ declare global {
       searchSessions: (query: string) => Promise<SessionData[]>;
       deleteSession:  (id: string) => Promise<void>;
       saveSession:    (session: Omit<SessionData, 'id' | 'created_at'>) => Promise<SessionData>;
+      updateSession:  (session: SessionData) => Promise<SessionData>;
 
       // Settings
       getSetting: (key: string) => Promise<string | null>;
       setSetting: (key: string, value: string) => Promise<void>;
 
       // AI
-      generateSummary: (transcript: string) => Promise<AISummaryResult>;
+      generateSummary: (transcript: string, mode?: string) => Promise<AISummaryResult>;
       transcribeAudio: (audioData: ArrayBuffer, language: string) => Promise<string>;
 
       // Files

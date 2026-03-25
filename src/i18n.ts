@@ -54,7 +54,7 @@ export const translations = {
     history: {
       title: 'Geçmiş', search: 'Ara...', loading: 'Yükleniyor...',
       noResults: 'Sonuç bulunamadı', empty: 'Henüz kayıt yok',
-      untitled: 'Başlıksız', delete: 'Sil',
+      untitled: 'Başlıksız', delete: 'Sil', save: 'Kaydet',
       summary: 'Özet', actions: 'Aksiyonlar', transcript: 'Transkript',
     },
     settings: {
@@ -121,7 +121,7 @@ export const translations = {
     history: {
       title: 'History', search: 'Search...', loading: 'Loading...',
       noResults: 'No results found', empty: 'No recordings yet',
-      untitled: 'Untitled', delete: 'Delete',
+      untitled: 'Untitled', delete: 'Delete', save: 'Save',
       summary: 'Summary', actions: 'Actions', transcript: 'Transcript',
     },
     settings: {
@@ -188,7 +188,7 @@ export const translations = {
     history: {
       title: 'Historial', search: 'Buscar...', loading: 'Cargando...',
       noResults: 'Sin resultados', empty: 'No hay grabaciones aún',
-      untitled: 'Sin título', delete: 'Eliminar',
+      untitled: 'Sin título', delete: 'Eliminar', save: 'Guardar',
       summary: 'Resumen', actions: 'Acciones', transcript: 'Transcripción',
     },
     settings: {
@@ -255,7 +255,7 @@ export const translations = {
     history: {
       title: '历史', search: '搜索...', loading: '加载中...',
       noResults: '未找到结果', empty: '暂无录音',
-      untitled: '无标题', delete: '删除',
+      untitled: '无标题', delete: '删除', save: '保存',
       summary: '摘要', actions: '行动项', transcript: '转录',
     },
     settings: {
@@ -322,7 +322,7 @@ export const translations = {
     history: {
       title: 'السجل', search: 'بحث...', loading: 'جارٍ التحميل...',
       noResults: 'لا توجد نتائج', empty: 'لا توجد تسجيلات بعد',
-      untitled: 'بدون عنوان', delete: 'حذف',
+      untitled: 'بدون عنوان', delete: 'حذف', save: 'حفظ',
       summary: 'الملخص', actions: 'الإجراءات', transcript: 'النسخ',
     },
     settings: {
@@ -389,7 +389,7 @@ export const translations = {
     history: {
       title: 'इतिहास', search: 'खोजें...', loading: 'लोड हो रहा है...',
       noResults: 'कोई परिणाम नहीं', empty: 'अभी तक कोई रिकॉर्डिंग नहीं',
-      untitled: 'शीर्षकहीन', delete: 'हटाएं',
+      untitled: 'शीर्षकहीन', delete: 'हटाएं', save: 'सहेजें',
       summary: 'सारांश', actions: 'कार्रवाइयां', transcript: 'ट्रांस्क्रिप्ट',
     },
     settings: {
@@ -457,7 +457,7 @@ export const translations = {
     history: {
       title: 'Historique', search: 'Rechercher...', loading: 'Chargement...',
       noResults: 'Aucun résultat', empty: 'Aucun enregistrement',
-      untitled: 'Sans titre', delete: 'Supprimer',
+      untitled: 'Sans titre', delete: 'Supprimer', save: 'Enregistrer',
       summary: 'Résumé', actions: 'Actions', transcript: 'Transcription',
     },
     settings: {
@@ -524,7 +524,7 @@ export const translations = {
     history: {
       title: 'Histórico', search: 'Pesquisar...', loading: 'Carregando...',
       noResults: 'Sem resultados', empty: 'Nenhuma gravação ainda',
-      untitled: 'Sem título', delete: 'Excluir',
+      untitled: 'Sem título', delete: 'Excluir', save: 'Salvar',
       summary: 'Resumo', actions: 'Ações', transcript: 'Transcrição',
     },
     settings: {
@@ -591,7 +591,7 @@ export const translations = {
     history: {
       title: 'Verlauf', search: 'Suchen...', loading: 'Laden...',
       noResults: 'Keine Ergebnisse', empty: 'Noch keine Aufnahmen',
-      untitled: 'Ohne Titel', delete: 'Löschen',
+      untitled: 'Ohne Titel', delete: 'Löschen', save: 'Speichern',
       summary: 'Zusammenfassung', actions: 'Aktionen', transcript: 'Transkript',
     },
     settings: {

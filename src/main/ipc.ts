@@ -1,5 +1,5 @@
 import { ipcMain, shell } from 'electron';
-import { getSessions, getSession, searchSessions, deleteSession, insertSession, NewSession } from './db';
+import { getSessions, getSession, searchSessions, deleteSession, insertSession, updateSession, NewSession, Session } from './db';
 import { getSetting, setSetting } from './settings';
 import { generateSummary, transcribeBuffer, transcribeWithDiarization, ProcessMode } from './ai';
 import { saveNoteAsText, NoteData } from './files';
@@ -25,6 +25,10 @@ export function registerIpcHandlers() {
 
   ipcMain.handle('db:saveSession', (_e, session: NewSession) => {
     return insertSession(session);
+  });
+
+  ipcMain.handle('db:updateSession', (_e, session: Session) => {
+    return updateSession(session);
   });
 
   // ── Settings ──────────────────────────────────────────────

@@ -80,6 +80,14 @@ export function searchSessions(query: string): Session[] {
   );
 }
 
+export function updateSession(session: Session): Session {
+  fs.writeFileSync(
+    path.join(getSessionsDir(), `${session.id}.json`),
+    JSON.stringify(session),
+  );
+  return session;
+}
+
 export function deleteSession(id: string): void {
   try {
     fs.unlinkSync(path.join(getSessionsDir(), `${id}.json`));

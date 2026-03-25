@@ -17,6 +17,9 @@ contextBridge.exposeInMainWorld('api', {
   saveSession:    (session: object) =>
     ipcRenderer.invoke('db:saveSession', session),
 
+  updateSession:  (session: object) =>
+    ipcRenderer.invoke('db:updateSession', session),
+
   // ── Settings ──────────────────────────────────────────────
   getSetting: (key: string) =>
     ipcRenderer.invoke('settings:get', key),

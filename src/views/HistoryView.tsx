@@ -24,6 +24,12 @@ export default function HistoryView() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Edit state
+  const [editTitle, setEditTitle] = useState('');
+  const [editTranscript, setEditTranscript] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
   const load = useCallback(async (q = '') => {
     setLoading(true);
     try {
@@ -43,19 +49,46 @@ export default function HistoryView() {
     return () => clearTimeout(timer);
   }, [search, load]);
 
+  const selectedSession = sessions.find(s => s.id === selected);
+
+  // Sync edit fields when selection changes
+  useEffect(() => {
+    if (selectedSession) {
+      setEditTitle(selectedSession.title || '');
+      setEditTranscript(selectedSession.transcript || '');
+      setSaved(false);
+    }
+  }, [selected, selectedSession?.id]);
+
   const handleDelete = async (id: string) => {
     await window.api.deleteSession(id);
     setSessions(prev => prev.filter(s => s.id !== id));
     if (selected === id) setSelected(null);
   };
 
-  const selectedSession = sessions.find(s => s.id === selected);
+  const handleSave = async () => {
+    if (!selectedSession) return;
+    setSaving(true);
+    try {
+      const updated: SessionData = {
+        ...selectedSession,
+        title: editTitle,
+        transcript: editTranscript,
+      };
+      await window.api.updateSession(updated);
+      setSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div style={{ display: 'flex', height: '100%' }}>
       {/* List */}
       <div style={{
-        width: selectedSession ? '320px' : '100%',
+        width: selectedSession ? '300px' : '100%',
         borderRight: selectedSession ? '1px solid #222' : 'none',
         display: 'flex', flexDirection: 'column', flexShrink: 0,
       }}>
@@ -120,28 +153,21 @@ export default function HistoryView() {
         const summaryArr: string[] = JSON.parse(selectedSession.summary || '[]');
         const actionsArr: ActionItem[] = JSON.parse(selectedSession.action_items || '[]');
         return (
-          <div style={{ flex: 1, overflowY: 'auto', padding: '28px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div>
-                <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px' }}>{selectedSession.title || t.history.untitled}</h2>
-                <div style={{ fontSize: '12px', color: '#555' }}>
-                  {formatDate(selectedSession.created_at, lang)} · {formatDuration(selectedSession.duration_sec)}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={() => handleDelete(selectedSession.id)}
-                  style={{ background: 'none', border: '1px solid #2a1a1a', borderRadius: '7px', color: '#ef4444', cursor: 'pointer', fontSize: '12px', padding: '4px 10px' }}
-                >
-                  {t.history.delete}
-                </button>
-                <button
-                  onClick={() => setSelected(null)}
-                  style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: '18px' }}
-                >
-                  ✕
-                </button>
-              </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column' }}>
+            {/* Editable title */}
+            <div style={{ marginBottom: '6px' }}>
+              <input
+                value={editTitle}
+                onChange={e => { setEditTitle(e.target.value); setSaved(false); }}
+                style={{
+                  width: '100%', fontSize: '18px', fontWeight: 700,
+                  background: 'transparent', border: 'none', borderBottom: '1px solid #2a2a2a',
+                  color: '#f0f0f0', outline: 'none', padding: '4px 0',
+                }}
+              />
+            </div>
+            <div style={{ fontSize: '12px', color: '#555', marginBottom: '24px' }}>
+              {formatDate(selectedSession.created_at, lang)} · {formatDuration(selectedSession.duration_sec)}
             </div>
 
             {summaryArr.length > 0 && (
@@ -172,11 +198,56 @@ export default function HistoryView() {
               </Section>
             )}
 
+            {/* Editable transcript */}
             <Section title={t.history.transcript}>
-              <div style={{ fontSize: '13px', lineHeight: '1.75', color: '#888', whiteSpace: 'pre-wrap' }}>
-                {selectedSession.transcript}
-              </div>
+              <textarea
+                value={editTranscript}
+                onChange={e => { setEditTranscript(e.target.value); setSaved(false); }}
+                style={{
+                  width: '100%', minHeight: '200px', fontSize: '13px', lineHeight: '1.75',
+                  color: '#aaa', background: 'transparent', border: 'none',
+                  outline: 'none', resize: 'vertical', fontFamily: 'inherit',
+                }}
+              />
             </Section>
+
+            {/* Action buttons — bottom */}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #1a1a1a' }}>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                style={{
+                  padding: '8px 20px', borderRadius: '8px', border: 'none',
+                  background: saved ? '#059669' : '#6366f1', color: '#fff',
+                  fontSize: '13px', fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
+                  opacity: saving ? 0.6 : 1, transition: 'background 0.3s',
+                }}
+              >
+                {saving ? '...' : saved ? '✅ Saved' : t.history.save}
+              </button>
+
+              <button
+                onClick={() => setSelected(null)}
+                style={{
+                  padding: '8px 16px', borderRadius: '8px',
+                  background: 'none', border: '1px solid #2a2a2a', color: '#888',
+                  cursor: 'pointer', fontSize: '13px',
+                }}
+              >
+                ✕
+              </button>
+
+              <button
+                onClick={() => handleDelete(selectedSession.id)}
+                style={{
+                  padding: '8px 16px', borderRadius: '8px',
+                  background: 'none', border: '1px solid #2a1a1a', color: '#ef4444',
+                  cursor: 'pointer', fontSize: '13px',
+                }}
+              >
+                {t.history.delete}
+              </button>
+            </div>
           </div>
         );
       })()}
