@@ -84,7 +84,11 @@ const createWindow = () => {
 
 // Otomatik güncelleme — GitHub Releases üzerinden
 if (app.isPackaged) {
-  updateElectronApp();
+  updateElectronApp({
+    repo: 'idrsdg/silentnoteai',
+    updateInterval: '1 hour',
+    notifyUser: true,
+  });
 }
 
 app.on('ready', async () => {
