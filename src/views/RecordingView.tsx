@@ -1,22 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useT, localizeError } from '../LanguageContext';
 
 type State = 'idle' | 'recording' | 'transcribing' | 'transcribed' | 'analyzing' | 'done';
 type ProcessMode = 'summary' | 'action_plan' | 'meeting_notes';
-
-const STATUS_TEXT: Record<State, string> = {
-  idle:         'Başlatmak için butona bas',
-  recording:    '⏺  Kayıt yapılıyor...',
-  transcribing: '🎙  Transkribe ediliyor...',
-  transcribed:  '📝  Transkript hazır — bir işlem seç',
-  analyzing:    '✨  Yapay zeka işliyor...',
-  done:         '✅  Tamamlandı',
-};
-
-const MODES: { key: ProcessMode; label: string; icon: string; desc: string }[] = [
-  { key: 'summary',       label: 'Özetle',            icon: '📄', desc: '3-5 maddelik özet' },
-  { key: 'action_plan',   label: 'Aksiyon Planı',      icon: '✅', desc: 'Kim ne yapacak?' },
-  { key: 'meeting_notes', label: 'Toplantı Notu',      icon: '📋', desc: 'Profesyonel belge formatı' },
-];
 
 interface Props {
   licenseStatus?: { type: string; sessionsUsed?: number; sessionsLimit?: number; daysLeft?: number } | null;
@@ -24,6 +10,7 @@ interface Props {
 }
 
 export default function RecordingView({ licenseStatus, onSessionSaved }: Props = {}) {
+  const { t } = useT();
   const [state, setState] = useState<State>('idle');
   const [elapsed, setElapsed] = useState(0);
   const [transcript, setTranscript] = useState('');
@@ -50,8 +37,8 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       timerRef.current && clearInterval(timerRef.current);
       rafRef.current && cancelAnimationFrame(rafRef.current);
       audioCtxRef.current?.close();
-      micStreamRef.current?.getTracks().forEach(t => t.stop());
-      sysStreamRef.current?.getTracks().forEach(t => t.stop());
+      micStreamRef.current?.getTracks().forEach(tr => tr.stop());
+      sysStreamRef.current?.getTracks().forEach(tr => tr.stop());
     };
   }, []);
 
@@ -68,17 +55,16 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
           video: { width: 1, height: 1 } as MediaTrackConstraints,
           audio: true,
         });
-        sysStream.getVideoTracks().forEach(t => t.stop());
+        sysStream.getVideoTracks().forEach(tr => tr.stop());
         if (sysStream.getAudioTracks().length > 0) {
           sysStreamRef.current = sysStream;
           setHasSysAudio(true);
         }
-      } catch { /* sessiz devam */ }
+      } catch { /* silent */ }
 
       const ctx = new AudioContext();
       audioCtxRef.current = ctx;
       const dest = ctx.createMediaStreamDestination();
-
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 64;
       const micSrc = ctx.createMediaStreamSource(micStream);
@@ -113,7 +99,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       timerRef.current = setInterval(() => setElapsed(s => s + 1), 1000);
       setState('recording');
     } catch (e: any) {
-      setError(e?.message ?? 'Kayıt başlatılamadı');
+      setError(localizeError(e?.message ?? '', t));
     }
   };
 
@@ -130,8 +116,8 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       recorderRef.current!.stop();
     });
 
-    micStreamRef.current?.getTracks().forEach(t => t.stop());
-    sysStreamRef.current?.getTracks().forEach(t => t.stop());
+    micStreamRef.current?.getTracks().forEach(tr => tr.stop());
+    sysStreamRef.current?.getTracks().forEach(tr => tr.stop());
     audioCtxRef.current?.close();
 
     try {
@@ -141,7 +127,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       setTranscript(text);
       setState('transcribed');
     } catch (e: any) {
-      setError(e?.message ?? 'Transkripsiyon başarısız');
+      setError(localizeError(e?.message ?? '', t));
       setState('done');
     }
   };
@@ -156,9 +142,8 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       setActions(result.action_items);
       setState('done');
 
-      // Otomatik kaydet
       await window.api.saveSession({
-        title: result.title || 'Başlıksız Toplantı',
+        title: result.title || 'Untitled',
         started_at: startedAtRef.current,
         ended_at: endedAtRef.current,
         duration_sec: elapsed,
@@ -169,7 +154,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       });
       onSessionSaved?.();
     } catch (e: any) {
-      setError(e?.message ?? 'İşlem başarısız');
+      setError(localizeError(e?.message ?? '', t));
       setState('transcribed');
     }
   };
@@ -191,15 +176,27 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
 
   const isProcessing = state === 'transcribing' || state === 'analyzing';
   const isExpired = licenseStatus?.type === 'expired';
-  const isTrial = licenseStatus?.type === 'trial';
+  const isTrial   = licenseStatus?.type === 'trial';
+
+  const MODES: { key: ProcessMode; icon: string }[] = [
+    { key: 'summary',       icon: '📄' },
+    { key: 'action_plan',   icon: '✅' },
+    { key: 'meeting_notes', icon: '📋' },
+  ];
+
+  const resultTitle = activeMode === 'meeting_notes'
+    ? t.record.results.meetingNotes
+    : activeMode === 'action_plan'
+      ? t.record.results.actionPlan
+      : t.record.results.summary;
 
   return (
     <div style={{ padding: '28px 32px', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '20px', fontWeight: 700 }}>Transkripsiyon</h1>
-          <p style={{ color: '#555', fontSize: '13px', marginTop: '2px' }}>Toplantını sessizce yazıya dök</p>
+          <h1 style={{ fontSize: '20px', fontWeight: 700 }}>{t.record.title}</h1>
+          <p style={{ color: '#555', fontSize: '13px', marginTop: '2px' }}>{t.record.subtitle}</p>
         </div>
         {isTrial && (
           <div style={{
@@ -207,7 +204,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
             background: 'rgba(245,158,11,.1)', border: '1px solid rgba(245,158,11,.3)',
             color: '#f59e0b', fontWeight: 600,
           }}>
-            Trial: {licenseStatus.sessionsUsed}/{licenseStatus.sessionsLimit} toplantı · {licenseStatus.daysLeft} gün kaldı
+            {t.record.trialBadge(licenseStatus!.sessionsUsed!, licenseStatus!.sessionsLimit!, licenseStatus!.daysLeft!)}
           </div>
         )}
       </div>
@@ -215,12 +212,12 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
       {isExpired && (
         <div style={{ padding: '24px', borderRadius: '14px', textAlign: 'center', background: '#141414', border: '1px solid #3a2a00' }}>
           <div style={{ fontSize: '32px', marginBottom: '10px' }}>🔒</div>
-          <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px' }}>Trial süresi doldu</div>
+          <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px' }}>{t.record.trialEnded}</div>
           <button
-            onClick={() => window.api.openExternal('https://silent-note-landing.vercel.app/#pricing')}
+            onClick={() => window.api.openExternal('https://silentnoteai.lemonsqueezy.com/checkout/buy/3c35056c-2075-4429-8193-e4cab81cd49a')}
             style={{ padding: '9px 22px', borderRadius: '9px', border: 'none', background: '#6366f1', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
           >
-            Lisans Al →
+            {t.record.getLicense}
           </button>
         </div>
       )}
@@ -239,10 +236,10 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
         }}>
           {state === 'recording' && (
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', justifyContent: 'center' }}>
-              <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: '#1a1a2e', border: '1px solid #6366f1', color: '#a5b4fc' }}>🎙 Mikrofon</span>
+              <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: '#1a1a2e', border: '1px solid #6366f1', color: '#a5b4fc' }}>{t.record.mic}</span>
               {hasSysAudio
-                ? <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: '#0d1a0d', border: '1px solid #059669', color: '#6ee77a' }}>🔊 Sistem sesi</span>
-                : <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: '#1a1a1a', border: '1px solid #333', color: '#555' }}>🔇 Sistem sesi yok</span>
+                ? <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: '#0d1a0d', border: '1px solid #059669', color: '#6ee77a' }}>{t.record.sysAudio}</span>
+                : <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '6px', background: '#1a1a1a', border: '1px solid #333', color: '#555' }}>{t.record.noSysAudio}</span>
               }
             </div>
           )}
@@ -250,10 +247,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
           {/* Waveform */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', height: '44px', marginBottom: '20px' }}>
             {bars.map((h, i) => (
-              <div key={i} style={{
-                width: '3px', height: `${h}px`, borderRadius: '2px',
-                background: state === 'recording' ? '#6366f1' : '#2a2a2a',
-              }} />
+              <div key={i} style={{ width: '3px', height: `${h}px`, borderRadius: '2px', background: state === 'recording' ? '#6366f1' : '#2a2a2a' }} />
             ))}
           </div>
 
@@ -263,61 +257,65 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
               {fmt(elapsed)}
             </div>
             <div style={{ fontSize: '12px', color: '#444', marginTop: '6px' }}>
-              {STATUS_TEXT[state]}
+              {t.record.status[state]}
             </div>
           </div>
 
           {/* Buttons */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            {state === 'idle' && (
-              <Btn color="#6366f1" onClick={startRecording}>⏺  Kaydı Başlat</Btn>
-            )}
-            {state === 'recording' && (
-              <Btn color="#ef4444" onClick={stopRecording}>⏹  Durdur & Transkribe Et</Btn>
-            )}
-            {isProcessing && (
-              <Btn color="#333" onClick={() => {}} disabled>⏳  İşleniyor...</Btn>
-            )}
+            {state === 'idle' && <Btn color="#6366f1" onClick={startRecording}>{t.record.start}</Btn>}
+            {state === 'recording' && <Btn color="#ef4444" onClick={stopRecording}>{t.record.stop}</Btn>}
+            {isProcessing && <Btn color="#333" onClick={() => {}} disabled>{t.record.processing}</Btn>}
             {(state === 'done' || (state === 'transcribed' && error)) && (
-              <Btn color="#374151" onClick={reset}>↩  Yeni Kayıt</Btn>
+              <Btn color="#374151" onClick={reset}>{t.record.newRecord}</Btn>
             )}
           </div>
         </div>
       )}
 
-      {/* İşlem seçimi — transkript hazır */}
+      {/* Transcript + mode selection */}
       {state === 'transcribed' && !error && (
-        <div style={{ background: '#141414', borderRadius: '14px', padding: '20px', border: '1px solid #2a2a4a' }}>
-          <div style={{ fontSize: '12px', color: '#818cf8', fontWeight: 600, marginBottom: '14px', letterSpacing: '0.06em' }}>
-            TRANSKRIPT HAZIR — NE YAPALIM?
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-            {MODES.map(m => (
-              <button
-                key={m.key}
-                onClick={() => processTranscript(m.key)}
-                style={{
-                  padding: '14px 10px', borderRadius: '10px', border: '1px solid #2a2a2a',
-                  background: '#0f0f0f', color: '#e5e5e5', cursor: 'pointer',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-                  transition: 'border-color 0.15s, background 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#6366f1'; (e.currentTarget as HTMLButtonElement).style.background = '#111'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a2a'; (e.currentTarget as HTMLButtonElement).style.background = '#0f0f0f'; }}
-              >
-                <span style={{ fontSize: '22px' }}>{m.icon}</span>
-                <span style={{ fontSize: '13px', fontWeight: 600 }}>{m.label}</span>
-                <span style={{ fontSize: '11px', color: '#555' }}>{m.desc}</span>
-              </button>
-            ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, minHeight: 0 }}>
+          {/* Full transcript */}
+          <Card title={t.record.results.transcript}>
+            <div style={{ fontSize: '13px', lineHeight: '1.75', color: '#bbb', overflowY: 'auto', maxHeight: '240px', whiteSpace: 'pre-wrap' }}>
+              {transcript}
+            </div>
+          </Card>
+
+          {/* Mode buttons */}
+          <div style={{ background: '#141414', borderRadius: '14px', padding: '20px', border: '1px solid #2a2a4a' }}>
+            <div style={{ fontSize: '12px', color: '#818cf8', fontWeight: 600, marginBottom: '14px', letterSpacing: '0.06em' }}>
+              {t.record.transcriptReady}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+              {MODES.map(m => (
+                <button
+                  key={m.key}
+                  onClick={() => processTranscript(m.key)}
+                  style={{
+                    padding: '14px 10px', borderRadius: '10px', border: '1px solid #2a2a2a',
+                    background: '#0f0f0f', color: '#e5e5e5', cursor: 'pointer',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#6366f1'; (e.currentTarget as HTMLButtonElement).style.background = '#111'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a2a'; (e.currentTarget as HTMLButtonElement).style.background = '#0f0f0f'; }}
+                >
+                  <span style={{ fontSize: '22px' }}>{m.icon}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600 }}>{t.record.modes[m.key].label}</span>
+                  <span style={{ fontSize: '11px', color: '#555' }}>{t.record.modes[m.key].desc}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Sonuçlar */}
+      {/* Results */}
       {transcript && (state === 'done' || state === 'analyzing') && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', flex: 1, minHeight: 0 }}>
-          <Card title="Transkript">
+          <Card title={t.record.results.transcript}>
             <div style={{ fontSize: '13px', lineHeight: '1.75', color: '#bbb', overflowY: 'auto', maxHeight: '320px', whiteSpace: 'pre-wrap' }}>
               {transcript}
             </div>
@@ -328,7 +326,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
               <div style={{ fontSize: '15px', fontWeight: 700, color: '#e5e5e5', padding: '0 2px' }}>{title}</div>
             )}
             {summary.length > 0 && (
-              <Card title={activeMode === 'meeting_notes' ? 'Toplantı Notu' : activeMode === 'action_plan' ? 'Aksiyon Planı' : 'Özet'}>
+              <Card title={resultTitle}>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '7px' }}>
                   {summary.map((item, i) => (
                     <li key={i} style={{ fontSize: '13px', color: '#ccc', display: 'flex', gap: '8px', lineHeight: '1.5' }}>
@@ -340,7 +338,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
               </Card>
             )}
             {actions.length > 0 && (
-              <Card title="Aksiyonlar">
+              <Card title={t.record.results.actions}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {actions.map((a, i) => (
                     <div key={i} style={{ background: '#0f0f0f', borderRadius: '8px', padding: '10px 12px', border: '1px solid #1e1e1e', fontSize: '12px' }}>
@@ -355,7 +353,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
             )}
             {state === 'done' && (
               <div style={{ fontSize: '12px', color: '#4a7c59', padding: '8px 12px', background: '#0d1a0d', borderRadius: '8px', border: '1px solid #1e3a1e' }}>
-                ✅ Geçmişe kaydedildi
+                {t.record.savedToHistory}
               </div>
             )}
           </div>

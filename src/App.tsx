@@ -3,13 +3,17 @@ import RecordingView from './views/RecordingView';
 import HistoryView from './views/HistoryView';
 import SettingsView from './views/SettingsView';
 import LicenseView from './views/LicenseView';
+import { LanguageProvider, useT } from './LanguageContext';
+import { LANGUAGES, Lang } from './i18n';
 
 type View = 'recording' | 'history' | 'settings' | 'license';
 
-export default function App() {
+function AppInner() {
+  const { t, lang, setLang } = useT();
   const [activeView, setActiveView] = useState<View>('recording');
   const [onboarding, setOnboarding] = useState(false);
   const [licenseStatus, setLicenseStatus] = useState<{ type: string; sessionsUsed?: number; sessionsLimit?: number; daysLeft?: number } | null>(null);
+  const [showLangMenu, setShowLangMenu] = useState(false);
 
   const refreshLicense = async () => {
     const status = await window.api.getLicenseStatus();
@@ -24,23 +28,23 @@ export default function App() {
     refreshLicense();
   }, []);
 
-  const trialBadge = licenseStatus?.type === 'trial'
-    ? `${licenseStatus.sessionsUsed}/${licenseStatus.sessionsLimit}`
-    : null;
+  // close lang menu on outside click
+  useEffect(() => {
+    if (!showLangMenu) return;
+    const handler = () => setShowLangMenu(false);
+    window.addEventListener('click', handler);
+    return () => window.removeEventListener('click', handler);
+  }, [showLangMenu]);
+
+  const isTrial = licenseStatus?.type === 'trial';
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#0f0f0f', color: '#f0f0f0' }}>
       {/* Sidebar */}
       <aside style={{
-        width: '60px',
-        background: '#141414',
-        borderRight: '1px solid #222',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '16px 0',
-        gap: '6px',
-        flexShrink: 0,
+        width: '60px', background: '#141414', borderRight: '1px solid #222',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        padding: '16px 0', gap: '6px', flexShrink: 0,
       }}>
         {/* Logo */}
         <div style={{
@@ -52,13 +56,59 @@ export default function App() {
           🎙
         </div>
 
-        <NavBtn icon="🎙️" label="Kayıt" active={activeView === 'recording'} onClick={() => setActiveView('recording')} />
-        <NavBtn icon="📑" label="Geçmiş" active={activeView === 'history'} onClick={() => setActiveView('history')} />
+        <NavBtn icon="🎙️" label={t.nav.record} active={activeView === 'recording'} onClick={() => setActiveView('recording')} />
+        <NavBtn icon="📑" label={t.nav.history} active={activeView === 'history'} onClick={() => setActiveView('history')} />
 
         <div style={{ flex: 1 }} />
 
+        {/* Language selector */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={e => { e.stopPropagation(); setShowLangMenu(v => !v); }}
+            title={t.nav.language}
+            style={{
+              width: '44px', height: '44px', borderRadius: '10px', border: 'none',
+              background: showLangMenu ? '#6366f1' : 'transparent',
+              color: showLangMenu ? '#fff' : '#555',
+              fontSize: '18px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+          >
+            🌐
+          </button>
 
-        <NavBtn icon="⚙️" label="Ayarlar" active={activeView === 'settings'} onClick={() => setActiveView('settings')} />
+          {showLangMenu && (
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                position: 'absolute', bottom: '0', left: '52px',
+                background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '10px',
+                padding: '6px', minWidth: '148px', zIndex: 100,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+              }}
+            >
+              {LANGUAGES.map(l => (
+                <button
+                  key={l.code}
+                  onClick={() => { setLang(l.code as Lang); setShowLangMenu(false); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    width: '100%', padding: '7px 10px', borderRadius: '7px', border: 'none',
+                    background: lang === l.code ? 'rgba(99,102,241,0.2)' : 'transparent',
+                    color: lang === l.code ? '#a5b4fc' : '#ccc',
+                    fontSize: '13px', cursor: 'pointer', textAlign: 'left',
+                  }}
+                >
+                  <span style={{ fontSize: '16px' }}>{l.flag}</span>
+                  <span>{l.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <NavBtn icon="⚙️" label={t.nav.settings} active={activeView === 'settings'} onClick={() => setActiveView('settings')} />
       </aside>
 
       {/* Main content */}
@@ -66,26 +116,28 @@ export default function App() {
         {onboarding && activeView === 'settings' && (
           <div style={{ padding: '20px 32px 0', background: '#0d1117', borderBottom: '1px solid #1e2a1e' }}>
             <div style={{ padding: '12px 16px', borderRadius: '8px', background: '#0d1a0d', border: '1px solid #1e3a1e', color: '#6ee77a', fontSize: '13px' }}>
-              👋 Hoş geldin! Başlamak için OpenAI API key'ini gir ve Kaydet'e bas.
+              {t.onboarding.welcome}
             </div>
           </div>
         )}
         {activeView === 'recording' && (
-          <RecordingView
-            licenseStatus={licenseStatus}
-            onSessionSaved={refreshLicense}
-          />
+          <RecordingView licenseStatus={licenseStatus} onSessionSaved={refreshLicense} />
         )}
         {activeView === 'history' && <HistoryView />}
         {activeView === 'settings' && <SettingsView onSaved={() => setOnboarding(false)} />}
         {activeView === 'license' && (
-          <LicenseView onActivated={() => {
-            refreshLicense();
-            setActiveView('recording');
-          }} />
+          <LicenseView onActivated={() => { refreshLicense(); setActiveView('recording'); }} />
         )}
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
   );
 }
 

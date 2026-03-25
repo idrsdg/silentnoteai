@@ -102,24 +102,24 @@ export async function transcribeBuffer(audioData: Buffer, language?: string): Pr
 export type ProcessMode = 'summary' | 'action_plan' | 'meeting_notes';
 
 const PROMPTS: Record<ProcessMode, string> = {
-  summary: `Sen bir toplantı asistanısın. Verilen transkriptten şunları üret:
-1. Toplantı için uygun kısa bir başlık
-2. 3-5 maddelik özet (Türkçe)
-3. Boş action_items listesi
+  summary: `You are a meeting assistant. From the given transcript, produce:
+1. A short appropriate title for the meeting
+2. A 3-5 bullet point summary
+3. An empty action_items list
 
-JSON formatında yanıt ver:
+Respond in the SAME LANGUAGE as the transcript. Reply in JSON:
 {
   "title": "...",
-  "summary": ["madde1", "madde2", ...],
+  "summary": ["point1", "point2", ...],
   "action_items": []
 }`,
 
-  action_plan: `Sen bir toplantı asistanısın. Verilen transkriptten şunları üret:
-1. Toplantı için uygun kısa bir başlık
-2. Boş summary listesi
-3. Tüm aksiyon maddelerini çıkar (kimin ne yapacağı, ne zaman)
+  action_plan: `You are a meeting assistant. From the given transcript, produce:
+1. A short appropriate title for the meeting
+2. An empty summary list
+3. All action items (who does what, by when)
 
-JSON formatında yanıt ver:
+Respond in the SAME LANGUAGE as the transcript. Reply in JSON:
 {
   "title": "...",
   "summary": [],
@@ -128,13 +128,13 @@ JSON formatında yanıt ver:
   ]
 }`,
 
-  meeting_notes: `Sen bir toplantı asistanısın. Verilen transkriptten profesyonel bir toplantı notu üret.
-Şunları içersin: katılımcılar (varsa), ana gündem maddeleri, kararlar, sonraki adımlar.
+  meeting_notes: `You are a meeting assistant. Produce professional meeting notes from the transcript.
+Include: participants (if mentioned), main agenda items, decisions, next steps.
 
-JSON formatında yanıt ver:
+Respond in the SAME LANGUAGE as the transcript. Reply in JSON:
 {
   "title": "...",
-  "summary": ["## Gündem\\n madde...", "## Kararlar\\n madde...", "## Sonraki Adımlar\\n madde..."],
+  "summary": ["## Agenda\\n item...", "## Decisions\\n item...", "## Next Steps\\n item..."],
   "action_items": []
 }`,
 };

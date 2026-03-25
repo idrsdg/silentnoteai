@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useT } from '../LanguageContext';
 
 export default function SettingsView({ onSaved }: { onSaved?: () => void } = {}) {
+  const { t } = useT();
   const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [assemblyKey, setAssemblyKey] = useState('');
@@ -31,7 +33,7 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
       setTimeout(() => setStatus('idle'), 2000);
       onSaved?.();
     } catch (e: any) {
-      setErrorMsg(e?.message ?? 'Kaydetme başarısız');
+      setErrorMsg(e?.message ?? t.settings.saveFailed);
       setStatus('error');
     }
   };
@@ -39,12 +41,12 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
   return (
     <div style={{ padding: '28px 32px', maxWidth: '560px' }}>
       <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '20px', fontWeight: 700 }}>Ayarlar</h1>
-        <p style={{ color: '#555', fontSize: '13px', marginTop: '2px' }}>Uygulama yapılandırması</p>
+        <h1 style={{ fontSize: '20px', fontWeight: 700 }}>{t.settings.title}</h1>
+        <p style={{ color: '#555', fontSize: '13px', marginTop: '2px' }}>{t.settings.subtitle}</p>
       </div>
 
-      {/* API Key */}
-      <SettingCard title="OpenAI API Key" desc="Whisper transkripsiyon ve GPT özet için gerekli">
+      {/* OpenAI API Key */}
+      <SettingCard title={t.settings.openaiKey.title} desc={t.settings.openaiKey.desc}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type={showKey ? 'text' : 'password'}
@@ -65,30 +67,29 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
           </button>
         </div>
         <div style={{ marginTop: '10px', padding: '12px 14px', borderRadius: '8px', background: '#0d0d18', border: '1px solid #2a2a4a', fontSize: '12px', lineHeight: '1.8' }}>
-          <div style={{ fontWeight: 600, color: '#818cf8', marginBottom: '6px' }}>API key nasıl alınır?</div>
+          <div style={{ fontWeight: 600, color: '#818cf8', marginBottom: '6px' }}>{t.settings.openaiKey.howTo}</div>
           <ol style={{ paddingLeft: '16px', color: '#666' }}>
-            <li><span style={{ color: '#999' }}>platform.openai.com</span>'a git ve giriş yap</li>
-            <li>Sol menüden <strong style={{ color: '#999' }}>API Keys</strong> sekmesine tıkla</li>
-            <li><strong style={{ color: '#999' }}>Create new secret key</strong> butonuna bas</li>
-            <li>Oluşan key'i kopyala ve yukarıdaki kutuya yapıştır</li>
+            {t.settings.openaiKey.steps.map((step, i) => (
+              <li key={i}><span style={{ color: '#999' }}>{step}</span></li>
+            ))}
           </ol>
           <button
             onClick={() => window.api.openExternal('https://platform.openai.com/api-keys')}
             style={{ marginTop: '8px', padding: '5px 12px', borderRadius: '6px', border: '1px solid #3a3a6a', background: 'transparent', color: '#818cf8', fontSize: '11px', cursor: 'pointer' }}
           >
-            platform.openai.com'u aç →
+            {t.settings.openaiKey.open}
           </button>
         </div>
       </SettingCard>
 
       {/* AssemblyAI Key */}
-      <SettingCard title="AssemblyAI API Key (İsteğe Bağlı)" desc="Konuşmacı ayrıştırma (diarization) için gerekli. assemblyai.com'dan ücretsiz alabilirsin.">
+      <SettingCard title={t.settings.assemblyKey.title} desc={t.settings.assemblyKey.desc}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type={showAssemblyKey ? 'text' : 'password'}
             value={assemblyKey}
             onChange={e => setAssemblyKey(e.target.value)}
-            placeholder="Key'ini buraya gir..."
+            placeholder={t.settings.assemblyKey.placeholder}
             style={{
               flex: 1, padding: '8px 12px', borderRadius: '8px',
               background: '#0f0f0f', border: '1px solid #2a2a2a',
@@ -103,12 +104,12 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
           </button>
         </div>
         <p style={{ fontSize: '11px', color: '#444', marginTop: '6px' }}>
-          Girilirse transkripte "Konuşmacı A:", "Konuşmacı B:" etiketleri eklenir. Girilmezse Whisper kullanılır.
+          {t.settings.assemblyKey.note}
         </p>
       </SettingCard>
 
-      {/* Language */}
-      <SettingCard title="Transkripsiyon Dili" desc="Toplantılarda konuşulan dil">
+      {/* Transcription Language */}
+      <SettingCard title={t.settings.transcribeLang.title} desc={t.settings.transcribeLang.desc}>
         <select
           value={language}
           onChange={e => setLanguage(e.target.value)}
@@ -120,12 +121,19 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
         >
           <option value="tr">Türkçe</option>
           <option value="en">English</option>
-          <option value="auto">Otomatik Algıla</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="pt">Português</option>
+          <option value="zh">中文</option>
+          <option value="ar">العربية</option>
+          <option value="hi">हिन्दी</option>
+          <option value="auto">Auto</option>
         </select>
       </SettingCard>
 
       {/* Auto delete */}
-      <SettingCard title="Ses Dosyalarını Otomatik Sil" desc="Transkripsiyon biter bitmez ses dosyası silinir. Gizlilik için önerilir.">
+      <SettingCard title={t.settings.autoDelete.title} desc={t.settings.autoDelete.desc}>
         <div
           onClick={() => setAutoDelete(!autoDelete)}
           style={{
@@ -163,17 +171,17 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
           transition: 'background 0.3s',
         }}
       >
-        {status === 'saving' ? 'Kaydediliyor...' : status === 'saved' ? '✅ Kaydedildi' : 'Kaydet'}
+        {status === 'saving' ? t.settings.saving : status === 'saved' ? t.settings.saved : t.settings.save}
       </button>
 
-      {/* Info box */}
+      {/* Privacy */}
       <div style={{
         marginTop: '32px', padding: '16px', borderRadius: '10px',
         background: '#0d1117', border: '1px solid #1e2a1e',
         fontSize: '12px', color: '#4a7c59', lineHeight: '1.6',
       }}>
-        <div style={{ fontWeight: 600, marginBottom: '4px', color: '#6ee77a' }}>🔒 Gizlilik</div>
-        Ses verileri Whisper API'ye gönderilir ve hemen silinir. Transkriptler yalnızca bu bilgisayarda saklanır. Hiçbir veri üçüncü taraflarla paylaşılmaz.
+        <div style={{ fontWeight: 600, marginBottom: '4px', color: '#6ee77a' }}>{t.settings.privacy.title}</div>
+        {t.settings.privacy.text}
       </div>
     </div>
   );

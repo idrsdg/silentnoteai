@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useT } from '../LanguageContext';
 import { SessionData, ActionItem } from '../types/api';
 
-function formatDate(ts: number): string {
-  return new Date(ts).toLocaleString('tr-TR', {
+function formatDate(ts: number, lang: string): string {
+  const locale = lang === 'zh' ? 'zh-CN' : lang === 'ar' ? 'ar-SA' : lang === 'hi' ? 'hi-IN' : lang === 'es' ? 'es-ES' : lang === 'tr' ? 'tr-TR' : lang === 'fr' ? 'fr-FR' : lang === 'pt' ? 'pt-PT' : lang === 'de' ? 'de-DE' : 'en-US';
+  return new Date(ts).toLocaleString(locale, {
     day: 'numeric', month: 'long', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
 }
 
 function formatDuration(sec: number): string {
-  if (sec < 60) return `${sec} sn`;
+  if (sec < 60) return `${sec}s`;
   const m = Math.floor(sec / 60);
   const s = sec % 60;
-  return s > 0 ? `${m} dk ${s} sn` : `${m} dk`;
+  return s > 0 ? `${m}m ${s}s` : `${m}m`;
 }
 
 export default function HistoryView() {
+  const { t, lang } = useT();
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -56,13 +59,12 @@ export default function HistoryView() {
         borderRight: selectedSession ? '1px solid #222' : 'none',
         display: 'flex', flexDirection: 'column', flexShrink: 0,
       }}>
-        {/* Header */}
         <div style={{ padding: '28px 24px 16px', borderBottom: '1px solid #1a1a1a' }}>
-          <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>Geçmiş</h1>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>{t.history.title}</h1>
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Ara..."
+            placeholder={t.history.search}
             style={{
               width: '100%', padding: '8px 12px', borderRadius: '8px',
               background: '#1a1a1a', border: '1px solid #2a2a2a',
@@ -71,15 +73,14 @@ export default function HistoryView() {
           />
         </div>
 
-        {/* Sessions */}
         <div style={{ overflowY: 'auto', flex: 1 }}>
           {loading ? (
             <div style={{ padding: '40px 24px', textAlign: 'center', color: '#444', fontSize: '14px' }}>
-              Yükleniyor...
+              {t.history.loading}
             </div>
           ) : sessions.length === 0 ? (
             <div style={{ padding: '40px 24px', textAlign: 'center', color: '#444', fontSize: '14px' }}>
-              {search ? 'Sonuç bulunamadı' : 'Henüz kayıt yok'}
+              {search ? t.history.noResults : t.history.empty}
             </div>
           ) : sessions.map(s => {
             const summaryArr: string[] = JSON.parse(s.summary || '[]');
@@ -88,8 +89,7 @@ export default function HistoryView() {
                 key={s.id}
                 onClick={() => setSelected(s.id === selected ? null : s.id)}
                 style={{
-                  padding: '16px 24px',
-                  borderBottom: '1px solid #1a1a1a',
+                  padding: '16px 24px', borderBottom: '1px solid #1a1a1a',
                   cursor: 'pointer',
                   background: selected === s.id ? '#1a1a2e' : 'transparent',
                   borderLeft: selected === s.id ? '3px solid #6366f1' : '3px solid transparent',
@@ -97,10 +97,10 @@ export default function HistoryView() {
                 }}
               >
                 <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px', color: selected === s.id ? '#a5b4fc' : '#e5e5e5' }}>
-                  {s.title || 'Başlıksız'}
+                  {s.title || t.history.untitled}
                 </div>
                 <div style={{ fontSize: '12px', color: '#444', display: 'flex', gap: '8px' }}>
-                  <span>{formatDate(s.created_at)}</span>
+                  <span>{formatDate(s.created_at, lang)}</span>
                   <span>·</span>
                   <span>{formatDuration(s.duration_sec)}</span>
                 </div>
@@ -123,9 +123,9 @@ export default function HistoryView() {
           <div style={{ flex: 1, overflowY: 'auto', padding: '28px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
               <div>
-                <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px' }}>{selectedSession.title || 'Başlıksız'}</h2>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px' }}>{selectedSession.title || t.history.untitled}</h2>
                 <div style={{ fontSize: '12px', color: '#555' }}>
-                  {formatDate(selectedSession.created_at)} · {formatDuration(selectedSession.duration_sec)}
+                  {formatDate(selectedSession.created_at, lang)} · {formatDuration(selectedSession.duration_sec)}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -133,7 +133,7 @@ export default function HistoryView() {
                   onClick={() => handleDelete(selectedSession.id)}
                   style={{ background: 'none', border: '1px solid #2a1a1a', borderRadius: '7px', color: '#ef4444', cursor: 'pointer', fontSize: '12px', padding: '4px 10px' }}
                 >
-                  Sil
+                  {t.history.delete}
                 </button>
                 <button
                   onClick={() => setSelected(null)}
@@ -145,7 +145,7 @@ export default function HistoryView() {
             </div>
 
             {summaryArr.length > 0 && (
-              <Section title="Özet">
+              <Section title={t.history.summary}>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '7px' }}>
                   {summaryArr.map((item, i) => (
                     <li key={i} style={{ fontSize: '13px', color: '#ccc', display: 'flex', gap: '8px', lineHeight: '1.5' }}>
@@ -158,13 +158,10 @@ export default function HistoryView() {
             )}
 
             {actionsArr.length > 0 && (
-              <Section title="Aksiyonlar">
+              <Section title={t.history.actions}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {actionsArr.map((a, i) => (
-                    <div key={i} style={{
-                      background: '#0f0f0f', borderRadius: '8px', padding: '10px 12px',
-                      border: '1px solid #1e1e1e', fontSize: '12px',
-                    }}>
+                    <div key={i} style={{ background: '#0f0f0f', borderRadius: '8px', padding: '10px 12px', border: '1px solid #1e1e1e', fontSize: '12px' }}>
                       <div style={{ color: '#e5e5e5', fontWeight: 500, marginBottom: '3px' }}>{a.task}</div>
                       <span style={{ color: '#8b5cf6' }}>{a.owner}</span>
                       <span style={{ color: '#444' }}> · </span>
@@ -175,7 +172,7 @@ export default function HistoryView() {
               </Section>
             )}
 
-            <Section title="Transkript">
+            <Section title={t.history.transcript}>
               <div style={{ fontSize: '13px', lineHeight: '1.75', color: '#888', whiteSpace: 'pre-wrap' }}>
                 {selectedSession.transcript}
               </div>

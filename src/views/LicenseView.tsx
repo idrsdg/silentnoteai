@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useT, localizeError } from '../LanguageContext';
 
 export default function LicenseView({ onActivated }: { onActivated: () => void }) {
+  const { t } = useT();
   const [key, setKey] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -14,7 +16,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
     if (result.success) {
       onActivated();
     } else {
-      setError(result.error ?? 'Aktivasyon başarısız.');
+      setError(localizeError(result.error ?? '', t) || result.error ?? t.license.activate.btn);
     }
   };
 
@@ -29,11 +31,10 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ fontSize: '48px', marginBottom: '14px' }}>🔒</div>
           <h1 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '10px' }}>
-            Trial süren doldu
+            {t.license.expired}
           </h1>
-          <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.7' }}>
-            10 ücretsiz toplantını kullandın.<br />
-            Devam etmek için lisans satın al.
+          <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+            {t.license.desc}
           </p>
         </div>
 
@@ -43,9 +44,9 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
             padding: '20px', borderRadius: '12px',
             background: 'rgba(99,102,241,.08)', border: '1px solid #6366f1', textAlign: 'center',
           }}>
-            <div style={{ fontSize: '11px', color: '#6366f1', marginBottom: '6px', fontWeight: 700 }}>LİFETIME LİSANS</div>
+            <div style={{ fontSize: '11px', color: '#6366f1', marginBottom: '6px', fontWeight: 700 }}>{t.license.plan.label}</div>
             <div style={{ fontSize: '32px', fontWeight: 800, color: '#f0f0f0' }}>$29</div>
-            <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>tek seferlik ödeme · 3 cihaz</div>
+            <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>{t.license.plan.note}</div>
           </div>
         </div>
 
@@ -58,7 +59,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
             border: 'none', cursor: 'pointer', marginBottom: '24px',
           }}
         >
-          Lisans Satın Al →
+          {t.license.buy}
         </button>
 
         {/* Activation */}
@@ -66,14 +67,14 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
           background: '#141414', borderRadius: '14px', padding: '24px', border: '1px solid #222',
         }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#888', marginBottom: '12px' }}>
-            Lisans key'in var mı? Buraya gir:
+            {t.license.activate.hint}
           </div>
           <input
             type="text"
             value={key}
             onChange={e => setKey(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && activate()}
-            placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+            placeholder={t.license.activate.placeholder}
             style={{
               width: '100%', padding: '10px 14px', borderRadius: '8px',
               background: '#0f0f0f', border: '1px solid #2a2a2a',
@@ -99,7 +100,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
               opacity: loading || !key.trim() ? 0.5 : 1,
             }}
           >
-            {loading ? 'Doğrulanıyor...' : 'Aktive Et'}
+            {loading ? t.license.activate.activating : t.license.activate.btn}
           </button>
         </div>
 
