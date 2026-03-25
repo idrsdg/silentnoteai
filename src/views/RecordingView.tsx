@@ -214,7 +214,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
           <div style={{ fontSize: '32px', marginBottom: '10px' }}>🔒</div>
           <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px' }}>{t.record.trialEnded}</div>
           <button
-            onClick={() => window.api.openExternal('https://silentnoteai.lemonsqueezy.com/checkout/buy/3c35056c-2075-4429-8193-e4cab81cd49a')}
+            onClick={() => window.api.openExternal('https://velnot.lemonsqueezy.com/checkout/buy/3c35056c-2075-4429-8193-e4cab81cd49a')}
             style={{ padding: '9px 22px', borderRadius: '9px', border: 'none', background: '#6366f1', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
           >
             {t.record.getLicense}

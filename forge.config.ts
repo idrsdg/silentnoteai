@@ -10,7 +10,7 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    executableName: 'silent-note-ai',
+    executableName: 'velnot',
     icon: './assets/icon',
     extraResource: ['./assets/icon.ico'],
   },
@@ -18,7 +18,7 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({
       setupIcon: './assets/icon.ico',
-      iconUrl: 'https://raw.githubusercontent.com/idrsdg/silentnoteai/master/assets/icon.ico',
+      iconUrl: 'https://raw.githubusercontent.com/idrsdg/velnot/master/assets/icon.ico',
     }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),

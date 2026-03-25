@@ -21,7 +21,7 @@ function getIconPath(): string {
 const createTray = () => {
   const icon = nativeImage.createFromPath(getIconPath());
   tray = new Tray(icon);
-  tray.setToolTip('Silent Note AI');
+  tray.setToolTip('Velnot');
 
   const menu = Menu.buildFromTemplate([
     {
@@ -85,7 +85,7 @@ const createWindow = () => {
 // Otomatik güncelleme — GitHub Releases üzerinden
 if (app.isPackaged) {
   updateElectronApp({
-    repo: 'idrsdg/silentnoteai',
+    repo: 'idrsdg/velnot',
     updateInterval: '1 hour',
     notifyUser: true,
   });

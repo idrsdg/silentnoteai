@@ -1,9 +1,9 @@
 {
-  "name": "silent-note-ai",
-  "productName": "Silent Note AI",
+  "name": "velnot",
+  "productName": "Velnot",
   "version": "1.0.25",
   "description": "Toplantılarını gizlice kaydet, AI ile özetle",
-  "repository": "https://github.com/idrsdg/silentnoteai",
+  "repository": "https://github.com/idrsdg/velnot",
   "main": ".vite/build/main.js",
   "private": true,
   "scripts": {

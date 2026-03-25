@@ -3,9 +3,9 @@ import { useT, localizeError } from '../LanguageContext';
 
 // TODO: Replace MONTHLY_URL and YEARLY_URL after creating subscription products on Lemon Squeezy
 const CHECKOUT_URLS = {
-  monthly:  'https://silentnoteai.lemonsqueezy.com/checkout/buy/86f794c7-9a13-46b2-93a3-3082f0fc25a3',
-  yearly:   'https://silentnoteai.lemonsqueezy.com/checkout/buy/bdbef23a-5149-479e-89dc-050cf7b5635e',
-  lifetime: 'https://silentnoteai.lemonsqueezy.com/checkout/buy/ccf62ba2-72b4-413f-919a-03dd1a2c1991',
+  monthly:  'https://velnot.lemonsqueezy.com/checkout/buy/86f794c7-9a13-46b2-93a3-3082f0fc25a3',
+  yearly:   'https://velnot.lemonsqueezy.com/checkout/buy/bdbef23a-5149-479e-89dc-050cf7b5635e',
+  lifetime: 'https://velnot.lemonsqueezy.com/checkout/buy/ccf62ba2-72b4-413f-919a-03dd1a2c1991',
 };
 
 export default function LicenseView({ onActivated }: { onActivated: () => void }) {

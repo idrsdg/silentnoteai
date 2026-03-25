@@ -22,7 +22,7 @@ function formatDuration(sec: number): string {
 }
 
 export function saveNoteAsText(data: NoteData): string {
-  const dir = path.join(os.homedir(), 'Documents', 'SilentNoteAI');
+  const dir = path.join(os.homedir(), 'Documents', 'Velnot');
   fs.mkdirSync(dir, { recursive: true });
 
   const dateStr = new Date(data.date).toLocaleString('tr-TR', {
