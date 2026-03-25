@@ -47,6 +47,20 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
 
       {/* OpenAI API Key */}
       <SettingCard title={t.settings.openaiKey.title} desc={t.settings.openaiKey.desc}>
+        <div style={{ marginBottom: '10px', padding: '12px 14px', borderRadius: '8px', background: '#0d0d18', border: '1px solid #2a2a4a', fontSize: '12px', lineHeight: '1.8' }}>
+          <div style={{ fontWeight: 600, color: '#818cf8', marginBottom: '6px' }}>{t.settings.openaiKey.howTo}</div>
+          <ol style={{ paddingLeft: '16px', color: '#666' }}>
+            {t.settings.openaiKey.steps.map((step, i) => (
+              <li key={i}><span style={{ color: '#999' }}>{step}</span></li>
+            ))}
+          </ol>
+          <button
+            onClick={() => window.api.openExternal('https://platform.openai.com/api-keys')}
+            style={{ marginTop: '8px', padding: '5px 12px', borderRadius: '6px', border: '1px solid #3a3a6a', background: 'transparent', color: '#818cf8', fontSize: '11px', cursor: 'pointer' }}
+          >
+            {t.settings.openaiKey.open}
+          </button>
+        </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type={showKey ? 'text' : 'password'}
@@ -64,20 +78,6 @@ export default function SettingsView({ onSaved }: { onSaved?: () => void } = {})
             style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: '#888', cursor: 'pointer', fontSize: '13px' }}
           >
             {showKey ? '🙈' : '👁'}
-          </button>
-        </div>
-        <div style={{ marginTop: '10px', padding: '12px 14px', borderRadius: '8px', background: '#0d0d18', border: '1px solid #2a2a4a', fontSize: '12px', lineHeight: '1.8' }}>
-          <div style={{ fontWeight: 600, color: '#818cf8', marginBottom: '6px' }}>{t.settings.openaiKey.howTo}</div>
-          <ol style={{ paddingLeft: '16px', color: '#666' }}>
-            {t.settings.openaiKey.steps.map((step, i) => (
-              <li key={i}><span style={{ color: '#999' }}>{step}</span></li>
-            ))}
-          </ol>
-          <button
-            onClick={() => window.api.openExternal('https://platform.openai.com/api-keys')}
-            style={{ marginTop: '8px', padding: '5px 12px', borderRadius: '6px', border: '1px solid #3a3a6a', background: 'transparent', color: '#818cf8', fontSize: '11px', cursor: 'pointer' }}
-          >
-            {t.settings.openaiKey.open}
           </button>
         </div>
       </SettingCard>
