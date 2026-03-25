@@ -460,7 +460,6 @@ export const translations = {
       processFailed: 'प्रोसेसिंग विफल। OpenAI API Key और इंटरनेट कनेक्शन जांचें।',
     },
   },
-};
 
   fr: {
     nav: { record: 'Enregistrer', history: 'Historique', settings: 'Paramètres', language: 'Langue' },
