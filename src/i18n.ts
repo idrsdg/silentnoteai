@@ -2,14 +2,14 @@ export type Lang = 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'tr' | 'fr' | 'pt' | 'de';
 
 export const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
   { code: 'en', label: 'English',    flag: '🇬🇧' },
-  { code: 'zh', label: '中文',       flag: '🇨🇳' },
-  { code: 'hi', label: 'हिन्दी',    flag: '🇮🇳' },
   { code: 'es', label: 'Español',    flag: '🇪🇸' },
   { code: 'fr', label: 'Français',   flag: '🇫🇷' },
-  { code: 'pt', label: 'Português',  flag: '🇵🇹' },
-  { code: 'de', label: 'Deutsch',    flag: '🇩🇪' },
+  { code: 'zh', label: '中文',       flag: '🇨🇳' },
+  { code: 'hi', label: 'हिन्दी',    flag: '🇮🇳' },
   { code: 'ar', label: 'العربية',   flag: '🇸🇦' },
+  { code: 'pt', label: 'Português',  flag: '🇵🇹' },
   { code: 'tr', label: 'Türkçe',    flag: '🇹🇷' },
+  { code: 'de', label: 'Deutsch',    flag: '🇩🇪' },
 ];
 
 export const translations = {
