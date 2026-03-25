@@ -76,7 +76,7 @@ export const translations = {
       privacy: { title: '🔒 Gizlilik', text: "Ses verileri Whisper API'ye gönderilir ve hemen silinir. Transkriptler yalnızca bu bilgisayarda saklanır. Hiçbir veri üçüncü taraflarla paylaşılmaz." },
     },
     license: {
-      expired: 'Trial süren doldu', desc: '10 ücretsiz toplantını kullandın.\nDevam etmek için lisans satın al.',
+      expired: 'Trial süren doldu', desc: '5 ücretsiz toplantını kullandın.\nDevam etmek için lisans satın al.',
       popular: 'En Popüler',
       plans: {
         monthly:  { label: 'AYLIK',   price: '$4.99',  period: '/ay',   note: '3 cihaz' },
@@ -148,7 +148,7 @@ export const translations = {
       privacy: { title: '🔒 Privacy', text: 'Audio is sent to Whisper API and immediately deleted. Transcripts are stored only on your computer. No data is shared with third parties.' },
     },
     license: {
-      expired: 'Trial ended', desc: "You've used your 10 free sessions.\nPurchase a license to continue.",
+      expired: 'Trial ended', desc: "You've used your 5 free sessions.\nPurchase a license to continue.",
       popular: 'Most Popular',
       plans: {
         monthly:  { label: 'MONTHLY',  price: '$4.99',  period: '/mo', note: '3 devices' },
@@ -220,7 +220,7 @@ export const translations = {
       privacy: { title: '🔒 Privacidad', text: 'El audio se envía a Whisper API y se elimina inmediatamente. Las transcripciones se almacenan solo en tu computadora. No se comparten datos con terceros.' },
     },
     license: {
-      expired: 'Prueba terminada', desc: 'Has usado tus 10 sesiones gratuitas.\nCompra una licencia para continuar.',
+      expired: 'Prueba terminada', desc: 'Has usado tus 5 sesiones gratuitas.\nCompra una licencia para continuar.',
       popular: 'Más Popular',
       plans: {
         monthly:  { label: 'MENSUAL',     price: '$4.99',  period: '/mes',  note: '3 dispositivos' },
@@ -292,7 +292,7 @@ export const translations = {
       privacy: { title: '🔒 隐私', text: '音频发送到Whisper API后立即删除。转录内容仅存储在您的计算机上。不与第三方共享任何数据。' },
     },
     license: {
-      expired: '试用已结束', desc: '您已使用了10次免费会话。\n请购买许可证以继续使用。',
+      expired: '试用已结束', desc: '您已使用了5次免费会话。\n请购买许可证以继续使用。',
       popular: '最受欢迎',
       plans: {
         monthly:  { label: '月度', price: '$4.99',  period: '/月', note: '3台设备' },
@@ -364,7 +364,7 @@ export const translations = {
       privacy: { title: '🔒 الخصوصية', text: 'يُرسل الصوت إلى Whisper API ويُحذف فورًا. تُخزَّن النصوص على جهازك فقط. لا تُشارك أي بيانات مع أطراف ثالثة.' },
     },
     license: {
-      expired: 'انتهت الفترة التجريبية', desc: 'لقد استخدمت 10 جلسات مجانية.\nاشترِ ترخيصًا للمتابعة.',
+      expired: 'انتهت الفترة التجريبية', desc: 'لقد استخدمت 5 جلسات مجانية.\nاشترِ ترخيصًا للمتابعة.',
       popular: 'الأكثر شعبية',
       plans: {
         monthly:  { label: 'شهري',       price: '$4.99',  period: '/شهر', note: '3 أجهزة' },
@@ -436,7 +436,7 @@ export const translations = {
       privacy: { title: '🔒 गोपनीयता', text: 'ऑडियो Whisper API को भेजा जाता है और तुरंत हटा दिया जाता है। ट्रांस्क्रिप्ट केवल आपके कंप्यूटर पर संग्रहीत होते हैं। कोई डेटा तृतीय पक्षों के साथ साझा नहीं किया जाता।' },
     },
     license: {
-      expired: 'ट्रायल समाप्त', desc: 'आपने 10 मुफ़्त सेशन उपयोग किए।\nजारी रखने के लिए लाइसेंस खरीदें।',
+      expired: 'ट्रायल समाप्त', desc: 'आपने 5 मुफ़्त सेशन उपयोग किए।\nजारी रखने के लिए लाइसेंस खरीदें।',
       popular: 'सबसे लोकप्रिय',
       plans: {
         monthly:  { label: 'मासिक',     price: '$4.99',  period: '/माह',  note: '3 डिवाइस' },
@@ -508,7 +508,7 @@ export const translations = {
       privacy: { title: '🔒 Confidentialité', text: 'L\'audio est envoyé à l\'API Whisper et immédiatement supprimé. Les transcriptions sont stockées uniquement sur votre ordinateur. Aucune donnée n\'est partagée.' },
     },
     license: {
-      expired: 'Essai terminé', desc: 'Vous avez utilisé vos 10 sessions gratuites.\nAchetez une licence pour continuer.',
+      expired: 'Essai terminé', desc: 'Vous avez utilisé vos 5 sessions gratuites.\nAchetez une licence pour continuer.',
       popular: 'Le Plus Populaire',
       plans: {
         monthly:  { label: 'MENSUEL', price: '$4.99',  period: '/mois', note: '3 appareils' },
@@ -580,7 +580,7 @@ export const translations = {
       privacy: { title: '🔒 Privacidade', text: 'O áudio é enviado para a API Whisper e imediatamente excluído. As transcrições são armazenadas apenas no seu computador. Nenhum dado é compartilhado com terceiros.' },
     },
     license: {
-      expired: 'Período de teste encerrado', desc: 'Você usou suas 10 sessões gratuitas.\nCompre uma licença para continuar.',
+      expired: 'Período de teste encerrado', desc: 'Você usou suas 5 sessões gratuitas.\nCompre uma licença para continuar.',
       popular: 'Mais Popular',
       plans: {
         monthly:  { label: 'MENSAL',    price: '$4.99',  period: '/mês',  note: '3 dispositivos' },
@@ -652,7 +652,7 @@ export const translations = {
       privacy: { title: '🔒 Datenschutz', text: 'Audio wird an die Whisper API gesendet und sofort gelöscht. Transkripte werden nur auf Ihrem Computer gespeichert. Keine Daten werden mit Dritten geteilt.' },
     },
     license: {
-      expired: 'Testphase beendet', desc: 'Sie haben Ihre 10 kostenlosen Sitzungen verwendet.\nKaufen Sie eine Lizenz, um fortzufahren.',
+      expired: 'Testphase beendet', desc: 'Sie haben Ihre 5 kostenlosen Sitzungen verwendet.\nKaufen Sie eine Lizenz, um fortzufahren.',
       popular: 'Am Beliebtesten',
       plans: {
         monthly:  { label: 'MONATLICH',  price: '$4.99',  period: '/Monat', note: '3 Geräte' },

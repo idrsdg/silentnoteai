@@ -57,15 +57,15 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
               key={plan.id}
               style={{
                 padding: '22px 16px 18px', borderRadius: '14px', textAlign: 'center',
-                background: plan.popular ? 'rgba(99,102,241,.1)' : '#111',
-                border: plan.popular ? '1.5px solid #6366f1' : '1px solid #222',
+                background: plan.popular ? 'rgba(249,115,22,.12)' : '#111',
+                border: plan.popular ? '1.5px solid #f97316' : '1px solid #222',
                 position: 'relative',
               }}
             >
               {plan.popular && (
                 <div style={{
                   position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)',
-                  background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: 700,
+                  background: '#f97316', color: '#fff', fontSize: '10px', fontWeight: 700,
                   padding: '3px 10px', borderRadius: '20px', whiteSpace: 'nowrap',
                 }}>
                   {t.license.popular}
@@ -73,7 +73,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
               )}
               <div style={{
                 fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '10px',
-                color: plan.popular ? '#818cf8' : '#555',
+                color: plan.popular ? '#fdba74' : '#555',
               }}>
                 {plan.label}
               </div>
@@ -88,7 +88,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
                 onClick={() => window.api.openExternal(plan.url)}
                 style={{
                   width: '100%', padding: '8px', borderRadius: '8px',
-                  background: plan.popular ? '#6366f1' : '#1e1e1e',
+                  background: plan.popular ? '#f97316' : '#1e1e1e',
                   color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                   border: plan.popular ? 'none' : '1px solid #2a2a2a',
                 }}
@@ -101,7 +101,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
 
         {/* Activation */}
         <div style={{
-          background: '#141414', borderRadius: '14px', padding: '24px', border: '1px solid #222',
+          background: '#150f09', borderRadius: '14px', padding: '24px', border: '1px solid #222',
         }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#888', marginBottom: '12px' }}>
             {t.license.activate.hint}
@@ -114,7 +114,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
             placeholder={t.license.activate.placeholder}
             style={{
               width: '100%', padding: '10px 14px', borderRadius: '8px',
-              background: '#0f0f0f', border: '1px solid #2a2a2a',
+              background: '#0e0a07', border: '1px solid #2a1e14',
               color: '#f0f0f0', fontSize: '13px', outline: 'none',
               marginBottom: '10px', boxSizing: 'border-box',
             }}

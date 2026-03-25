@@ -8,9 +8,10 @@ type ProcessMode = 'summary' | 'action_plan' | 'meeting_notes';
 interface Props {
   licenseStatus?: { type: string; sessionsUsed?: number; sessionsLimit?: number; daysLeft?: number } | null;
   onSessionSaved?: () => void;
+  onGetLicense?: () => void;
 }
 
-export default function RecordingView({ licenseStatus, onSessionSaved }: Props = {}) {
+export default function RecordingView({ licenseStatus, onSessionSaved, onGetLicense }: Props = {}) {
   const { t } = useT();
   const [state, setState] = useState<State>('idle');
   const [elapsed, setElapsed] = useState(0);
@@ -276,7 +277,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved }: Props =
           <div style={{ fontSize: '32px', marginBottom: '10px' }}>🔒</div>
           <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px' }}>{t.record.trialEnded}</div>
           <button
-            onClick={() => window.api.openExternal('https://velnot.lemonsqueezy.com/checkout/buy/ccf62ba2-72b4-413f-919a-03dd1a2c1991')}
+            onClick={() => onGetLicense?.()}
             style={{ padding: '9px 22px', borderRadius: '9px', border: 'none', background: '#f97316', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
           >
             {t.record.getLicense}

@@ -121,7 +121,7 @@ function AppInner() {
           </div>
         )}
         {activeView === 'recording' && (
-          <RecordingView licenseStatus={licenseStatus} onSessionSaved={refreshLicense} />
+          <RecordingView licenseStatus={licenseStatus} onSessionSaved={refreshLicense} onGetLicense={() => setActiveView('license')} />
         )}
         {activeView === 'history' && <HistoryView />}
         {activeView === 'settings' && <SettingsView onSaved={() => setOnboarding(false)} />}
