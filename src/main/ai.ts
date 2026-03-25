@@ -46,7 +46,8 @@ export async function transcribeWithDiarization(audioData: Buffer, language?: st
     body: JSON.stringify({
       audio_url: upload_url,
       speaker_labels: true,
-      speech_models: ['universal-2'],
+      speech_model: 'best',      // Universal-2 — en iyi diarizasyon modeli
+      speakers_expected: 2,       // varsayılan 2 konuşmacı (kullanıcı değiştirebilir)
       ...(lang ? { language_code: lang } : {}),
     }),
   });
