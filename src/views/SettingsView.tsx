@@ -184,14 +184,31 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
         {status === 'saving' ? t.settings.saving : status === 'saved' ? t.settings.saved : t.settings.save}
       </button>
 
-      {/* Privacy */}
+      {/* Privacy & Legal */}
       <div style={{
         marginTop: '32px', padding: '16px', borderRadius: '10px',
         background: '#0d1117', border: '1px solid #1e2a1e',
         fontSize: '12px', color: '#4a7c59', lineHeight: '1.6',
       }}>
-        <div style={{ fontWeight: 600, marginBottom: '4px', color: '#6ee77a' }}>{t.settings.privacy.title}</div>
-        {t.settings.privacy.text}
+        <div style={{ fontWeight: 600, marginBottom: '6px', color: '#6ee77a' }}>{t.settings.privacy.title}</div>
+        <div style={{ marginBottom: '8px' }}>{t.settings.privacy.text}</div>
+        <div style={{ color: '#3a5c3a', marginBottom: '10px' }}>
+          {t.settings.privacy.processors}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => window.api.openExternal('https://velnot.com/privacy')}
+            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #1e3a1e', background: 'transparent', color: '#6ee77a', fontSize: '11px', cursor: 'pointer' }}
+          >
+            {t.settings.privacy.policyLink}
+          </button>
+          <button
+            onClick={() => window.api.openExternal('https://velnot.com/terms')}
+            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #1e3a1e', background: 'transparent', color: '#6ee77a', fontSize: '11px', cursor: 'pointer' }}
+          >
+            {t.settings.privacy.termsLink}
+          </button>
+        </div>
       </div>
     </div>
   );

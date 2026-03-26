@@ -73,7 +73,7 @@ export const translations = {
       transcribeLang: { title: 'Transkripsiyon Dili', desc: 'Toplantılarda konuşulan dil' },
       autoDelete: { title: 'Ses Dosyalarını Otomatik Sil', desc: 'Transkripsiyon biter bitmez ses dosyası silinir. Gizlilik için önerilir.' },
       uiLang: { title: 'Arayüz Dili', desc: 'Uygulamanın görüntülendiği dil' },
-      privacy: { title: '🔒 Gizlilik', text: "Ses verileri Whisper API'ye gönderilir ve hemen silinir. Transkriptler yalnızca bu bilgisayarda saklanır. Hiçbir veri üçüncü taraflarla paylaşılmaz." },
+      privacy: { title: '🔒 Gizlilik', text: "Ses verileri Whisper API'ye gönderilir ve hemen silinir. Transkriptler yalnızca bu bilgisayarda saklanır. Hiçbir veri üçüncü taraflarla paylaşılmaz.", processors: 'Veri işleyiciler: OpenAI (Whisper — transkripsiyon, GPT — özet), AssemblyAI (isteğe bağlı — konuşmacı ayrıştırma).', policyLink: 'Gizlilik Politikası →', termsLink: 'Kullanım Koşulları →' },
       plan: {
         title: 'Planın',
         trial: 'Ücretsiz Deneme',
@@ -98,6 +98,13 @@ export const translations = {
       },
       buy: 'Satın Al →',
       activate: { hint: "Lisans key'in var mı? Buraya gir:", placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'Aktive Et', activating: 'Doğrulanıyor...' },
+    },
+    consent: {
+      title: 'Kayıt Onayı',
+      body: 'Kayda başlamadan önce: toplantıdaki tüm katılımcıların kaydedileceğinden haberdar olduğunu ve rıza gösterdiğini onaylamalısın. Ses kaydı yasaları ülkeye göre farklılık gösterir — yerel mevzuata uyum senin sorumluluğundadır.',
+      checkbox: 'Tüm katılımcıların haberdar olduğunu ve kaydedilmeye rıza gösterdiğini onaylıyorum',
+      accept: 'Kaydı Başlat',
+      decline: 'İptal',
     },
     onboarding: { welcome: "👋 Hoş geldin! Başlamak için OpenAI API key'ini gir ve Kaydet'e bas." },
     errors: {
@@ -158,7 +165,7 @@ export const translations = {
       transcribeLang: { title: 'Transcription Language', desc: 'Language spoken in your meetings' },
       autoDelete: { title: 'Auto-delete Audio Files', desc: 'Audio file is deleted after transcription. Recommended for privacy.' },
       uiLang: { title: 'Interface Language', desc: 'The language the app is displayed in' },
-      privacy: { title: '🔒 Privacy', text: 'Audio is sent to Whisper API and immediately deleted. Transcripts are stored only on your computer. No data is shared with third parties.' },
+      privacy: { title: '🔒 Privacy', text: 'Audio is sent to Whisper API and immediately deleted. Transcripts are stored only on your computer. No data is shared with third parties.', processors: 'Data processors: OpenAI (Whisper — transcription, GPT — summaries), AssemblyAI (optional — speaker diarization).', policyLink: 'Privacy Policy →', termsLink: 'Terms of Service →' },
       plan: {
         title: 'Your Plan',
         trial: 'Free Trial',
@@ -183,6 +190,13 @@ export const translations = {
       },
       buy: 'Buy →',
       activate: { hint: 'Have a license key? Enter it here:', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'Activate', activating: 'Verifying...' },
+    },
+    consent: {
+      title: 'Recording Consent',
+      body: 'Before recording: you must confirm that all meeting participants have been informed and have consented to being recorded. Recording laws vary by country — you are responsible for compliance with local regulations.',
+      checkbox: 'I confirm all participants are informed and have consented to be recorded',
+      accept: 'Start Recording',
+      decline: 'Cancel',
     },
     onboarding: { welcome: '👋 Welcome! Enter your OpenAI API key and press Save to get started.' },
     errors: {
@@ -243,7 +257,7 @@ export const translations = {
       transcribeLang: { title: 'Idioma de Transcripción', desc: 'Idioma hablado en tus reuniones' },
       autoDelete: { title: 'Eliminar Audio Automáticamente', desc: 'El audio se elimina tras la transcripción. Recomendado para privacidad.' },
       uiLang: { title: 'Idioma de Interfaz', desc: 'El idioma en que se muestra la app' },
-      privacy: { title: '🔒 Privacidad', text: 'El audio se envía a Whisper API y se elimina inmediatamente. Las transcripciones se almacenan solo en tu computadora. No se comparten datos con terceros.' },
+      privacy: { title: '🔒 Privacidad', text: 'El audio se envía a Whisper API y se elimina inmediatamente. Las transcripciones se almacenan solo en tu computadora. No se comparten datos con terceros.', processors: 'Procesadores de datos: OpenAI (Whisper — transcripción, GPT — resúmenes), AssemblyAI (opcional — diarización).', policyLink: 'Política de Privacidad →', termsLink: 'Términos de Servicio →' },
       plan: {
         title: 'Tu Plan',
         trial: 'Prueba Gratuita',
@@ -268,6 +282,13 @@ export const translations = {
       },
       buy: 'Comprar →',
       activate: { hint: '¿Tienes una license key? Ingrésala aquí:', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'Activar', activating: 'Verificando...' },
+    },
+    consent: {
+      title: 'Consentimiento de Grabación',
+      body: 'Antes de grabar: debes confirmar que todos los participantes de la reunión han sido informados y han dado su consentimiento para ser grabados. Las leyes de grabación varían según el país — eres responsable del cumplimiento de la normativa local.',
+      checkbox: 'Confirmo que todos los participantes han sido informados y han dado su consentimiento para ser grabados',
+      accept: 'Iniciar Grabación',
+      decline: 'Cancelar',
     },
     onboarding: { welcome: '👋 ¡Bienvenido! Ingresa tu OpenAI API key y presiona Guardar para comenzar.' },
     errors: {
@@ -328,7 +349,7 @@ export const translations = {
       transcribeLang: { title: '转录语言', desc: '会议中使用的语言' },
       autoDelete: { title: '自动删除音频文件', desc: '转录完成后立即删除音频文件。建议用于隐私保护。' },
       uiLang: { title: '界面语言', desc: '应用程序显示的语言' },
-      privacy: { title: '🔒 隐私', text: '音频发送到Whisper API后立即删除。转录内容仅存储在您的计算机上。不与第三方共享任何数据。' },
+      privacy: { title: '🔒 隐私', text: '音频发送到Whisper API后立即删除。转录内容仅存储在您的计算机上。不与第三方共享任何数据。', processors: '数据处理方：OpenAI（Whisper — 转录，GPT — 摘要），AssemblyAI（可选 — 说话人分离）。', policyLink: '隐私政策 →', termsLink: '服务条款 →' },
       plan: {
         title: '您的计划',
         trial: '免费试用',
@@ -353,6 +374,13 @@ export const translations = {
       },
       buy: '购买 →',
       activate: { hint: '有许可证密钥？在此输入：', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: '激活', activating: '验证中...' },
+    },
+    consent: {
+      title: '录音同意',
+      body: '录音前：您必须确认所有会议参与者已被告知并同意被录音。录音法律因国家而异——您有责任遵守当地法规。',
+      checkbox: '我确认所有参与者已被告知并同意被录音',
+      accept: '开始录音',
+      decline: '取消',
     },
     onboarding: { welcome: '👋 欢迎！请输入您的OpenAI API Key并点击保存以开始使用。' },
     errors: {
@@ -413,7 +441,7 @@ export const translations = {
       transcribeLang: { title: 'لغة النسخ', desc: 'اللغة المستخدمة في اجتماعاتك' },
       autoDelete: { title: 'حذف ملفات الصوت تلقائيًا', desc: 'يتم حذف ملف الصوت بعد النسخ. موصى به للخصوصية.' },
       uiLang: { title: 'لغة الواجهة', desc: 'اللغة التي يعرضها التطبيق' },
-      privacy: { title: '🔒 الخصوصية', text: 'يُرسل الصوت إلى Whisper API ويُحذف فورًا. تُخزَّن النصوص على جهازك فقط. لا تُشارك أي بيانات مع أطراف ثالثة.' },
+      privacy: { title: '🔒 الخصوصية', text: 'يُرسل الصوت إلى Whisper API ويُحذف فورًا. تُخزَّن النصوص على جهازك فقط. لا تُشارك أي بيانات مع أطراف ثالثة.', processors: 'معالجو البيانات: OpenAI (Whisper — النسخ، GPT — الملخصات)، AssemblyAI (اختياري — تمييز المتحدثين).', policyLink: 'سياسة الخصوصية →', termsLink: 'شروط الخدمة →' },
       plan: {
         title: 'خطتك',
         trial: 'تجريبي مجاني',
@@ -438,6 +466,13 @@ export const translations = {
       },
       buy: 'شراء →',
       activate: { hint: 'هل لديك مفتاح ترخيص؟ أدخله هنا:', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'تفعيل', activating: 'جارٍ التحقق...' },
+    },
+    consent: {
+      title: 'موافقة التسجيل',
+      body: 'قبل التسجيل: يجب عليك التأكيد بأن جميع المشاركين في الاجتماع قد أُبلغوا ووافقوا على التسجيل. تختلف قوانين التسجيل من دولة إلى أخرى — أنت مسؤول عن الامتثال للوائح المحلية.',
+      checkbox: 'أؤكد أن جميع المشاركين قد أُبلغوا ووافقوا على التسجيل',
+      accept: 'بدء التسجيل',
+      decline: 'إلغاء',
     },
     onboarding: { welcome: '👋 مرحبًا! أدخل OpenAI API Key واضغط حفظ للبدء.' },
     errors: {
@@ -498,7 +533,7 @@ export const translations = {
       transcribeLang: { title: 'ट्रांस्क्रिप्शन भाषा', desc: 'आपकी मीटिंग में बोली जाने वाली भाषा' },
       autoDelete: { title: 'ऑडियो फाइलें स्वतः हटाएं', desc: 'ट्रांस्क्रिप्शन के बाद ऑडियो फाइल हटा दी जाती है। गोपनीयता के लिए अनुशंसित।' },
       uiLang: { title: 'इंटरफ़ेस भाषा', desc: 'ऐप किस भाषा में दिखाई देगी' },
-      privacy: { title: '🔒 गोपनीयता', text: 'ऑडियो Whisper API को भेजा जाता है और तुरंत हटा दिया जाता है। ट्रांस्क्रिप्ट केवल आपके कंप्यूटर पर संग्रहीत होते हैं। कोई डेटा तृतीय पक्षों के साथ साझा नहीं किया जाता।' },
+      privacy: { title: '🔒 गोपनीयता', text: 'ऑडियो Whisper API को भेजा जाता है और तुरंत हटा दिया जाता है। ट्रांस्क्रिप्ट केवल आपके कंप्यूटर पर संग्रहीत होते हैं। कोई डेटा तृतीय पक्षों के साथ साझा नहीं किया जाता।', processors: 'डेटा प्रोसेसर: OpenAI (Whisper — ट्रांस्क्रिप्शन, GPT — सारांश), AssemblyAI (वैकल्पिक — स्पीकर डायराइज़ेशन)।', policyLink: 'गोपनीयता नीति →', termsLink: 'सेवा की शर्तें →' },
       plan: {
         title: 'आपकी योजना',
         trial: 'मुफ्त ट्रायल',
@@ -523,6 +558,13 @@ export const translations = {
       },
       buy: 'खरीदें →',
       activate: { hint: 'लाइसेंस key है? यहाँ दर्ज करें:', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'सक्रिय करें', activating: 'सत्यापित हो रहा है...' },
+    },
+    consent: {
+      title: 'रिकॉर्डिंग सहमति',
+      body: 'रिकॉर्डिंग से पहले: आपको यह पुष्टि करनी होगी कि सभी मीटिंग प्रतिभागियों को सूचित किया गया है और उन्होंने रिकॉर्ड किए जाने की सहमति दी है। रिकॉर्डिंग कानून देश के अनुसार अलग-अलग होते हैं — स्थानीय नियमों का पालन करना आपकी जिम्मेदारी है।',
+      checkbox: 'मैं पुष्टि करता/करती हूं कि सभी प्रतिभागियों को सूचित किया गया है और उन्होंने रिकॉर्ड किए जाने की सहमति दी है',
+      accept: 'रिकॉर्डिंग शुरू करें',
+      decline: 'रद्द करें',
     },
     onboarding: { welcome: '👋 स्वागत है! शुरू करने के लिए अपना OpenAI API Key दर्ज करें और Save दबाएं।' },
     errors: {
@@ -583,7 +625,7 @@ export const translations = {
       transcribeLang: { title: 'Langue de Transcription', desc: 'Langue parlée dans vos réunions' },
       autoDelete: { title: 'Suppression Auto des Fichiers Audio', desc: 'Le fichier audio est supprimé après transcription. Recommandé pour la confidentialité.' },
       uiLang: { title: 'Langue de l\'Interface', desc: 'La langue d\'affichage de l\'application' },
-      privacy: { title: '🔒 Confidentialité', text: 'L\'audio est envoyé à l\'API Whisper et immédiatement supprimé. Les transcriptions sont stockées uniquement sur votre ordinateur. Aucune donnée n\'est partagée.' },
+      privacy: { title: '🔒 Confidentialité', text: 'L\'audio est envoyé à l\'API Whisper et immédiatement supprimé. Les transcriptions sont stockées uniquement sur votre ordinateur. Aucune donnée n\'est partagée.', processors: 'Processeurs de données : OpenAI (Whisper — transcription, GPT — résumés), AssemblyAI (optionnel — diarisation).', policyLink: 'Politique de Confidentialité →', termsLink: 'Conditions d\'Utilisation →' },
       plan: {
         title: 'Votre Plan',
         trial: 'Essai Gratuit',
@@ -608,6 +650,13 @@ export const translations = {
       },
       buy: 'Acheter →',
       activate: { hint: 'Vous avez une clé de licence ? Entrez-la ici :', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'Activer', activating: 'Vérification...' },
+    },
+    consent: {
+      title: 'Consentement d\'Enregistrement',
+      body: 'Avant d\'enregistrer : vous devez confirmer que tous les participants à la réunion ont été informés et ont consenti à être enregistrés. Les lois sur l\'enregistrement varient selon les pays — vous êtes responsable du respect de la réglementation locale.',
+      checkbox: 'Je confirme que tous les participants ont été informés et ont consenti à être enregistrés',
+      accept: 'Démarrer l\'Enregistrement',
+      decline: 'Annuler',
     },
     onboarding: { welcome: '👋 Bienvenue ! Entrez votre OpenAI API key et appuyez sur Enregistrer pour commencer.' },
     errors: {
@@ -668,7 +717,7 @@ export const translations = {
       transcribeLang: { title: 'Idioma de Transcrição', desc: 'Idioma falado em suas reuniões' },
       autoDelete: { title: 'Excluir Áudio Automaticamente', desc: 'O arquivo de áudio é excluído após a transcrição. Recomendado para privacidade.' },
       uiLang: { title: 'Idioma da Interface', desc: 'O idioma em que o app é exibido' },
-      privacy: { title: '🔒 Privacidade', text: 'O áudio é enviado para a API Whisper e imediatamente excluído. As transcrições são armazenadas apenas no seu computador. Nenhum dado é compartilhado com terceiros.' },
+      privacy: { title: '🔒 Privacidade', text: 'O áudio é enviado para a API Whisper e imediatamente excluído. As transcrições são armazenadas apenas no seu computador. Nenhum dado é compartilhado com terceiros.', processors: 'Processadores de dados: OpenAI (Whisper — transcrição, GPT — resumos), AssemblyAI (opcional — diarização).', policyLink: 'Política de Privacidade →', termsLink: 'Termos de Serviço →' },
       plan: {
         title: 'Seu Plano',
         trial: 'Teste Gratuito',
@@ -693,6 +742,13 @@ export const translations = {
       },
       buy: 'Comprar →',
       activate: { hint: 'Tem uma chave de licença? Digite aqui:', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'Ativar', activating: 'Verificando...' },
+    },
+    consent: {
+      title: 'Consentimento de Gravação',
+      body: 'Antes de gravar: você deve confirmar que todos os participantes da reunião foram informados e consentiram em ser gravados. As leis de gravação variam por país — você é responsável pelo cumprimento das regulamentações locais.',
+      checkbox: 'Confirmo que todos os participantes foram informados e consentiram em ser gravados',
+      accept: 'Iniciar Gravação',
+      decline: 'Cancelar',
     },
     onboarding: { welcome: '👋 Bem-vindo! Digite sua OpenAI API key e pressione Salvar para começar.' },
     errors: {
@@ -753,7 +809,7 @@ export const translations = {
       transcribeLang: { title: 'Transkriptionssprache', desc: 'In Ihren Meetings gesprochene Sprache' },
       autoDelete: { title: 'Audiodateien automatisch löschen', desc: 'Die Audiodatei wird nach der Transkription gelöscht. Empfohlen für den Datenschutz.' },
       uiLang: { title: 'Oberflächensprache', desc: 'Die Sprache, in der die App angezeigt wird' },
-      privacy: { title: '🔒 Datenschutz', text: 'Audio wird an die Whisper API gesendet und sofort gelöscht. Transkripte werden nur auf Ihrem Computer gespeichert. Keine Daten werden mit Dritten geteilt.' },
+      privacy: { title: '🔒 Datenschutz', text: 'Audio wird an die Whisper API gesendet und sofort gelöscht. Transkripte werden nur auf Ihrem Computer gespeichert. Keine Daten werden mit Dritten geteilt.', processors: 'Datenverarbeiter: OpenAI (Whisper — Transkription, GPT — Zusammenfassungen), AssemblyAI (optional — Sprecher-Diarisierung).', policyLink: 'Datenschutzrichtlinie →', termsLink: 'Nutzungsbedingungen →' },
       plan: {
         title: 'Ihr Plan',
         trial: 'Kostenlose Testphase',
@@ -778,6 +834,13 @@ export const translations = {
       },
       buy: 'Kaufen →',
       activate: { hint: 'Haben Sie einen Lizenzschlüssel? Hier eingeben:', placeholder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', btn: 'Aktivieren', activating: 'Überprüfung...' },
+    },
+    consent: {
+      title: 'Aufnahme-Einwilligung',
+      body: 'Vor der Aufnahme: Sie müssen bestätigen, dass alle Meetingteilnehmer informiert wurden und der Aufnahme zugestimmt haben. Aufnahmegesetze variieren je nach Land — Sie sind für die Einhaltung der lokalen Vorschriften verantwortlich.',
+      checkbox: 'Ich bestätige, dass alle Teilnehmer informiert wurden und der Aufnahme zugestimmt haben',
+      accept: 'Aufnahme starten',
+      decline: 'Abbrechen',
     },
     onboarding: { welcome: '👋 Willkommen! Geben Sie Ihren OpenAI API-Key ein und drücken Sie Speichern.' },
     errors: {

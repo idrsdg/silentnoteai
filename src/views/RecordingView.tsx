@@ -28,6 +28,9 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
   const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
   const [editTranscript, setEditTranscript] = useState('');
   const [editSaving, setEditSaving] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
 
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const liveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -43,6 +46,12 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
   const audioRef     = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    window.api.getSetting('recording_consent_given').then(val => {
+      if (val === 'true') setConsentGiven(true);
+    });
+  }, []);
+
+  useEffect(() => {
     return () => {
       timerRef.current && clearInterval(timerRef.current);
       liveTimerRef.current && clearInterval(liveTimerRef.current);
@@ -52,6 +61,22 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
       sysStreamRef.current?.getTracks().forEach(tr => tr.stop());
     };
   }, []);
+
+  const handleStartClick = () => {
+    if (!consentGiven) {
+      setConsentChecked(false);
+      setShowConsent(true);
+    } else {
+      startRecording();
+    }
+  };
+
+  const handleConsentAccept = async () => {
+    await window.api.setSetting('recording_consent_given', 'true');
+    setConsentGiven(true);
+    setShowConsent(false);
+    startRecording();
+  };
 
   const startRecording = async () => {
     setError('');
@@ -334,7 +359,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
 
           {/* Buttons */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            {state === 'idle' && <Btn color="#f97316" onClick={startRecording}>{t.record.start}</Btn>}
+            {state === 'idle' && <Btn color="#f97316" onClick={handleStartClick}>{t.record.start}</Btn>}
             {state === 'recording' && <Btn color="#ef4444" onClick={stopRecording}>{t.record.stop}</Btn>}
             {isProcessing && <Btn color="#333" onClick={() => {}} disabled>{t.record.processing}</Btn>}
             {(state === 'done' || (state === 'transcribed' && error)) && (
@@ -477,6 +502,58 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
       `}</style>
+
+      {/* Consent Modal */}
+      {showConsent && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200,
+        }}>
+          <div style={{
+            background: '#1a1108', border: '1px solid #3a2a14', borderRadius: '16px',
+            padding: '28px 32px', maxWidth: '480px', width: '90%',
+          }}>
+            <div style={{ fontSize: '18px', fontWeight: 700, marginBottom: '14px', color: '#f5f0eb' }}>
+              ⚠️ {(t as any).consent.title}
+            </div>
+            <p style={{ fontSize: '13px', color: '#aaa', lineHeight: '1.75', marginBottom: '20px' }}>
+              {(t as any).consent.body}
+            </p>
+            <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '24px' }}>
+              <input
+                type="checkbox"
+                checked={consentChecked}
+                onChange={e => setConsentChecked(e.target.checked)}
+                style={{ marginTop: '2px', accentColor: '#f97316', width: '16px', height: '16px', flexShrink: 0 }}
+              />
+              <span style={{ fontSize: '13px', color: '#e5e5e5', lineHeight: '1.6' }}>
+                {(t as any).consent.checkbox}
+              </span>
+            </label>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowConsent(false)}
+                style={{ padding: '8px 18px', borderRadius: '8px', border: '1px solid #333', background: 'transparent', color: '#888', fontSize: '13px', cursor: 'pointer' }}
+              >
+                {(t as any).consent.decline}
+              </button>
+              <button
+                onClick={handleConsentAccept}
+                disabled={!consentChecked}
+                style={{
+                  padding: '8px 18px', borderRadius: '8px', border: 'none',
+                  background: consentChecked ? '#f97316' : '#444', color: '#fff',
+                  fontSize: '13px', fontWeight: 600,
+                  cursor: consentChecked ? 'pointer' : 'not-allowed',
+                  opacity: consentChecked ? 1 : 0.5,
+                }}
+              >
+                {(t as any).consent.accept}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
