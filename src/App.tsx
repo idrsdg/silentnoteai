@@ -57,27 +57,47 @@ function AppInner() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#0e0a07', color: '#f5f0eb' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0e0a07', color: '#f5f0eb' }}>
       {showTour && <OnboardingModal onDone={handleTourDone} />}
+
+      {/* Custom Title Bar */}
+      <div style={{
+        display: 'flex', height: '38px', flexShrink: 0,
+        WebkitAppRegion: 'drag',
+      } as React.CSSProperties & { WebkitAppRegion: string }}>
+        {/* Logo section — aligns with sidebar width */}
+        <div style={{
+          width: '60px', background: '#150f09', borderRight: '1px solid #2a1e14',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <div style={{
+            width: '26px', height: '26px', borderRadius: '7px',
+            background: 'linear-gradient(135deg, #f97316, #ec4899)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '13px',
+          }}>
+            🎙
+          </div>
+        </div>
+        {/* App name + draggable area */}
+        <div style={{
+          flex: 1, background: '#0e0a07',
+          display: 'flex', alignItems: 'center', paddingLeft: '12px',
+        }}>
+          <span style={{ fontSize: '12px', fontWeight: 700, color: '#4a3420', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Velnot
+          </span>
+        </div>
+      </div>
+
+      {/* Sidebar + Main */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {/* Sidebar */}
       <aside style={{
         width: '60px', background: '#150f09', borderRight: '1px solid #2a1e14',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         padding: '16px 0', gap: '6px', flexShrink: 0,
       }}>
-        {/* Logo + Brand */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px', gap: '4px' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #f97316, #ec4899)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '18px', flexShrink: 0,
-          }}>
-            🎙
-          </div>
-          <span style={{ fontSize: '9px', fontWeight: 700, color: '#6a5040', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Velnot</span>
-        </div>
-
         <NavBtn icon="🎙️" label={t.nav.record} active={activeView === 'recording'} onClick={() => setActiveView('recording')} />
         <NavBtn icon="📑" label={t.nav.history} active={activeView === 'history'} onClick={() => setActiveView('history')} />
 
@@ -151,6 +171,7 @@ function AppInner() {
           <LicenseView onActivated={() => { refreshLicense(); setActiveView('recording'); }} />
         )}
       </main>
+      </div>
     </div>
   );
 }

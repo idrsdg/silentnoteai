@@ -66,7 +66,12 @@ const createWindow = () => {
     minWidth: 800,
     minHeight: 560,
     backgroundColor: '#0f0f0f',
-    titleBarStyle: 'hiddenInset',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#150f09',
+      symbolColor: '#6a5040',
+      height: 38,
+    },
     icon: getIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
