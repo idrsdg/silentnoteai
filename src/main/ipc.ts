@@ -2,7 +2,7 @@ import { ipcMain, shell, BrowserWindow } from 'electron';
 import { buildAppMenu } from './menu';
 import { getSessions, getSession, searchSessions, deleteSession, insertSession, updateSession, NewSession, Session } from './db';
 import { getSetting, setSetting } from './settings';
-import { generateSummary, transcribeBuffer, transcribeWithDiarization, transcribeChunk, ProcessMode } from './ai';
+import { generateSummary, transcribeBuffer, transcribeWithDiarization, transcribeChunk, getUsage, ProcessMode } from './ai';
 import { saveNoteAsText, saveNoteAsMarkdown, saveNoteAsDocx, saveNoteAsPdf, NoteData } from './files';
 import { saveSessionAudio } from './audio';
 import { getLicenseStatus, activateLicense } from './license';
@@ -48,11 +48,12 @@ export function registerIpcHandlers() {
   });
 
   ipcMain.handle('audio:transcribe', async (_e, audioData: ArrayBuffer, language: string) => {
-    const assemblyKey = getSetting('assemblyai_key');
-    if (assemblyKey) {
-      return transcribeWithDiarization(Buffer.from(audioData), language || 'tr');
+    // Check quota before processing
+    const usage = await getUsage();
+    if (usage.limit !== -1 && usage.remaining <= 0) {
+      throw new Error('QUOTA_EXCEEDED');
     }
-    return transcribeBuffer(Buffer.from(audioData), language || 'tr');
+    return transcribeWithDiarization(Buffer.from(audioData), language || 'tr');
   });
 
   // Real-time chunk transcription (always Whisper, no diarization overhead)
@@ -88,6 +89,10 @@ export function registerIpcHandlers() {
 
   ipcMain.handle('license:activate', async (_e, key: string) => {
     return activateLicense(key);
+  });
+
+  ipcMain.handle('license:getUsage', async () => {
+    return getUsage();
   });
 
   // ── Shell ─────────────────────────────────────────────────

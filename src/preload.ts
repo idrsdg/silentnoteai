@@ -55,6 +55,9 @@ contextBridge.exposeInMainWorld('api', {
   activateLicense: (key: string) =>
     ipcRenderer.invoke('license:activate', key),
 
+  getLicenseUsage: () =>
+    ipcRenderer.invoke('license:getUsage'),
+
   // ── Shell ─────────────────────────────────────────────────
   openExternal: (url: string) =>
     ipcRenderer.invoke('shell:openExternal', url),

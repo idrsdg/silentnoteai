@@ -8,22 +8,25 @@ interface LicenseStatus {
   daysLeft?: number;
 }
 
+interface UsageInfo {
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
 export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: { onSaved?: () => void; licenseStatus?: LicenseStatus | null; onGetLicense?: () => void } = {}) {
   const { t } = useT();
-  const [apiKey, setApiKey] = useState('');
-  const [showKey, setShowKey] = useState(false);
-  const [assemblyKey, setAssemblyKey] = useState('');
-  const [showAssemblyKey, setShowAssemblyKey] = useState(false);
   const [language, setLanguage] = useState('tr');
   const [autoDelete, setAutoDelete] = useState(true);
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [usage, setUsage] = useState<UsageInfo | null>(null);
 
   useEffect(() => {
-    window.api.getSetting('api_key').then(val => { if (val) setApiKey(val); });
-    window.api.getSetting('assemblyai_key').then(val => { if (val) setAssemblyKey(val); });
     window.api.getSetting('language').then(val => { if (val) setLanguage(val); });
     window.api.getSetting('auto_delete').then(val => { if (val !== null) setAutoDelete(val === 'true'); });
+    // Fetch usage info
+    window.api.getLicenseUsage?.().then((u: UsageInfo) => setUsage(u)).catch(() => {});
   }, []);
 
   const save = async () => {
@@ -31,8 +34,6 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
     setErrorMsg('');
     try {
       await Promise.all([
-        window.api.setSetting('api_key', apiKey),
-        window.api.setSetting('assemblyai_key', assemblyKey),
         window.api.setSetting('language', language),
         window.api.setSetting('auto_delete', String(autoDelete)),
       ]);
@@ -55,68 +56,8 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
       {/* Plan Status */}
       {licenseStatus && <PlanCard status={licenseStatus} t={t} onGetLicense={onGetLicense} />}
 
-      {/* OpenAI API Key */}
-      <SettingCard title={t.settings.openaiKey.title} desc={t.settings.openaiKey.desc}>
-        <div style={{ marginBottom: '10px', padding: '12px 14px', borderRadius: '8px', background: '#0e0a07', border: '1px solid #2a1a0a', fontSize: '12px', lineHeight: '1.8' }}>
-          <div style={{ fontWeight: 600, color: '#fb923c', marginBottom: '6px' }}>{t.settings.openaiKey.howTo}</div>
-          <ol style={{ paddingLeft: '16px', color: '#666' }}>
-            {t.settings.openaiKey.steps.map((step, i) => (
-              <li key={i}><span style={{ color: '#999' }}>{step}</span></li>
-            ))}
-          </ol>
-          <button
-            onClick={() => window.api.openExternal('https://platform.openai.com/api-keys')}
-            style={{ marginTop: '8px', padding: '5px 12px', borderRadius: '6px', border: '1px solid #3a2010', background: 'transparent', color: '#fb923c', fontSize: '11px', cursor: 'pointer' }}
-          >
-            {t.settings.openaiKey.open}
-          </button>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <input
-            type={showKey ? 'text' : 'password'}
-            value={apiKey}
-            onChange={e => setApiKey(e.target.value)}
-            placeholder="sk-..."
-            style={{
-              flex: 1, padding: '8px 12px', borderRadius: '8px',
-              background: '#0e0a07', border: '1px solid #2a2a2a',
-              color: '#f0f0f0', fontSize: '13px', outline: 'none',
-            }}
-          />
-          <button
-            onClick={() => setShowKey(!showKey)}
-            style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: '#888', cursor: 'pointer', fontSize: '13px' }}
-          >
-            {showKey ? '🙈' : '👁'}
-          </button>
-        </div>
-      </SettingCard>
-
-      {/* AssemblyAI Key */}
-      <SettingCard title={t.settings.assemblyKey.title} desc={t.settings.assemblyKey.desc}>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <input
-            type={showAssemblyKey ? 'text' : 'password'}
-            value={assemblyKey}
-            onChange={e => setAssemblyKey(e.target.value)}
-            placeholder={t.settings.assemblyKey.placeholder}
-            style={{
-              flex: 1, padding: '8px 12px', borderRadius: '8px',
-              background: '#0e0a07', border: '1px solid #2a2a2a',
-              color: '#f0f0f0', fontSize: '13px', outline: 'none',
-            }}
-          />
-          <button
-            onClick={() => setShowAssemblyKey(!showAssemblyKey)}
-            style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: '#888', cursor: 'pointer', fontSize: '13px' }}
-          >
-            {showAssemblyKey ? '🙈' : '👁'}
-          </button>
-        </div>
-        <p style={{ fontSize: '11px', color: '#444', marginTop: '6px' }}>
-          {t.settings.assemblyKey.note}
-        </p>
-      </SettingCard>
+      {/* Usage Card */}
+      {usage && <UsageCard usage={usage} t={t} onGetLicense={onGetLicense} licenseStatus={licenseStatus} />}
 
       {/* Transcription Language */}
       <SettingCard title={t.settings.transcribeLang.title} desc={t.settings.transcribeLang.desc}>
@@ -195,7 +136,56 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
   );
 }
 
-const CHECKOUT_URL_YEARLY = 'https://velnot.lemonsqueezy.com/checkout/buy/bdbef23a-5149-479e-89dc-050cf7b5635e';
+const CHECKOUT_URL_PRO = 'PLACEHOLDER_PRO_URL';
+
+function UsageCard({ usage, t, onGetLicense, licenseStatus }: { usage: UsageInfo; t: any; onGetLicense?: () => void; licenseStatus?: LicenseStatus | null }) {
+  const isUnlimited = usage.limit === -1;
+  const pct = isUnlimited ? 100 : Math.min(100, Math.round((usage.used / Math.max(usage.limit, 1)) * 100));
+  const isWarning = !isUnlimited && pct >= 80;
+  const isDanger  = !isUnlimited && pct >= 100;
+
+  const barColor = isDanger ? '#ef4444' : isWarning ? '#f59e0b' : '#f97316';
+  const tier = licenseStatus?.type ?? '';
+  const showUpgrade = tier === 'starter' || tier === 'monthly';
+
+  return (
+    <div style={{ marginBottom: '20px', padding: '18px 20px', background: '#150f09', borderRadius: '12px', border: '1px solid #222' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+        <div style={{ fontSize: '14px', fontWeight: 600, color: '#e5e5e5' }}>{t.settings.usage?.title ?? 'Kullanım'}</div>
+        {isUnlimited
+          ? <span style={{ fontSize: '12px', color: '#22c55e', fontWeight: 600 }}>∞ Sınırsız</span>
+          : <span style={{ fontSize: '12px', color: isDanger ? '#f87171' : '#888' }}>
+              {usage.remaining} / {usage.limit} dk kaldı
+            </span>
+        }
+      </div>
+
+      {!isUnlimited && (
+        <>
+          <div style={{ height: '6px', borderRadius: '3px', background: '#1e1e1e', overflow: 'hidden', marginBottom: '12px' }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: '3px', transition: 'width 0.4s' }} />
+          </div>
+          <div style={{ fontSize: '12px', color: '#555', marginBottom: showUpgrade ? '12px' : '0' }}>
+            {usage.used} dk kullanıldı · Ayda bir sıfırlanır
+          </div>
+        </>
+      )}
+
+      {showUpgrade && (
+        <button
+          onClick={() => window.api.openExternal(CHECKOUT_URL_PRO)}
+          style={{
+            padding: '7px 16px', borderRadius: '8px', border: 'none',
+            background: '#f97316', color: '#fff', fontSize: '12px', fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          {t.settings.usage?.upgradeBtn ?? 'Pro\'ya Geç →'}
+        </button>
+      )}
+    </div>
+  );
+}
 
 function PlanCard({ status, t, onGetLicense }: { status: { type: string; sessionsUsed?: number; sessionsLimit?: number; daysLeft?: number }; t: any; onGetLicense?: () => void }) {
   const isTrial = status.type === 'trial';
@@ -206,12 +196,12 @@ function PlanCard({ status, t, onGetLicense }: { status: { type: string; session
     ? t.settings.plan.trial
     : isExpired
     ? t.settings.plan.expired
-    : status.type === 'monthly'
-    ? t.settings.plan.monthly
-    : status.type === 'yearly'
-    ? t.settings.plan.yearly
-    : status.type === 'lifetime'
-    ? t.settings.plan.lifetime
+    : status.type === 'starter' || status.type === 'monthly'
+    ? t.settings.plan.starter ?? t.settings.plan.monthly
+    : status.type === 'pro' || status.type === 'yearly'
+    ? t.settings.plan.pro ?? t.settings.plan.yearly
+    : status.type === 'unlimited' || status.type === 'lifetime'
+    ? t.settings.plan.unlimited ?? t.settings.plan.lifetime
     : t.settings.plan.active;
 
   const badgeColor = isExpired ? '#ef4444' : isTrial ? '#f97316' : '#22c55e';
@@ -265,7 +255,7 @@ function PlanCard({ status, t, onGetLicense }: { status: { type: string; session
 
       {isActive && (
         <button
-          onClick={() => window.api.openExternal(CHECKOUT_URL_YEARLY)}
+          onClick={() => window.api.openExternal(CHECKOUT_URL_PRO)}
           style={{
             padding: '7px 16px', borderRadius: '8px', border: '1px solid #1a3a1a',
             background: 'transparent', color: '#86efac', fontSize: '12px', fontWeight: 600,

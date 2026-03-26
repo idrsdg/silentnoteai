@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useT, localizeError } from '../LanguageContext';
 
 const CHECKOUT_URLS = {
-  monthly:  'https://velnot.lemonsqueezy.com/checkout/buy/86f794c7-9a13-46b2-93a3-3082f0fc25a3',
-  yearly:   'https://velnot.lemonsqueezy.com/checkout/buy/bdbef23a-5149-479e-89dc-050cf7b5635e',
-  lifetime: 'https://velnot.lemonsqueezy.com/checkout/buy/ccf62ba2-72b4-413f-919a-03dd1a2c1991',
+  starter:   'PLACEHOLDER_STARTER_URL',   // $4.99/mo · 300 min
+  pro:       'PLACEHOLDER_PRO_URL',       // $9.99/mo · 1000 min
+  unlimited: 'PLACEHOLDER_UNLIMITED_URL', // $19.99/mo · unlimited
+  topup300:  'PLACEHOLDER_TOPUP300_URL',  // $2.99 · 300 min credit
+  topup1000: 'PLACEHOLDER_TOPUP1000_URL', // $7.99 · 1000 min credit
 };
 
 export default function LicenseView({ onActivated }: { onActivated: () => void }) {
@@ -27,9 +29,24 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
   };
 
   const plans = [
-    { id: 'monthly' as const,  popular: false, url: CHECKOUT_URLS.monthly,  ...t.license.plans.monthly  },
-    { id: 'yearly' as const,   popular: true,  url: CHECKOUT_URLS.yearly,   ...t.license.plans.yearly   },
-    { id: 'lifetime' as const, popular: false, url: CHECKOUT_URLS.lifetime, ...t.license.plans.lifetime },
+    {
+      id: 'starter' as const,
+      popular: false,
+      url: CHECKOUT_URLS.starter,
+      ...t.license.plans.starter,
+    },
+    {
+      id: 'pro' as const,
+      popular: true,
+      url: CHECKOUT_URLS.pro,
+      ...t.license.plans.pro,
+    },
+    {
+      id: 'unlimited' as const,
+      popular: false,
+      url: CHECKOUT_URLS.unlimited,
+      ...t.license.plans.unlimited,
+    },
   ];
 
   return (
@@ -37,7 +54,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       height: '100%', padding: '40px',
     }}>
-      <div style={{ maxWidth: '680px', width: '100%' }}>
+      <div style={{ maxWidth: '720px', width: '100%' }}>
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -51,7 +68,7 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
         </div>
 
         {/* Pricing cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }}>
           {plans.map(plan => (
             <div
               key={plan.id}
@@ -81,6 +98,9 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
                 <span style={{ fontSize: '28px', fontWeight: 800, color: '#f0f0f0' }}>{plan.price}</span>
                 {plan.period && <span style={{ fontSize: '12px', color: '#555' }}>{plan.period}</span>}
               </div>
+              <div style={{ fontSize: '11px', color: '#f97316', fontWeight: 600, marginBottom: '4px' }}>
+                {plan.minutes}
+              </div>
               <div style={{ fontSize: '11px', color: '#444', marginBottom: '14px', minHeight: '16px', lineHeight: '1.5' }}>
                 {plan.note}
               </div>
@@ -97,6 +117,29 @@ export default function LicenseView({ onActivated }: { onActivated: () => void }
               </button>
             </div>
           ))}
+        </div>
+
+        {/* Credit top-up */}
+        <div style={{
+          background: '#0e0e0e', borderRadius: '12px', padding: '16px 20px',
+          border: '1px solid #1e1e1e', marginBottom: '20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px',
+        }}>
+          <div style={{ fontSize: '13px', color: '#666' }}>{t.license.topup?.label ?? 'Ekstra dakika satın al:'}</div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => window.api.openExternal(CHECKOUT_URLS.topup300)}
+              style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: '#ccc', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              {t.license.topup?.btn300 ?? '300 dk — $2.99'}
+            </button>
+            <button
+              onClick={() => window.api.openExternal(CHECKOUT_URLS.topup1000)}
+              style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: '#ccc', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              {t.license.topup?.btn1000 ?? '1000 dk — $7.99'}
+            </button>
+          </div>
         </div>
 
         {/* Activation */}
