@@ -54,14 +54,17 @@ function AppInner() {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         padding: '16px 0', gap: '6px', flexShrink: 0,
       }}>
-        {/* Logo */}
-        <div style={{
-          width: '36px', height: '36px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #f97316, #ec4899)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: '20px', fontSize: '18px', flexShrink: 0,
-        }}>
-          🎙
+        {/* Logo + Brand */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px', gap: '4px' }}>
+          <div style={{
+            width: '36px', height: '36px', borderRadius: '10px',
+            background: 'linear-gradient(135deg, #f97316, #ec4899)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '18px', flexShrink: 0,
+          }}>
+            🎙
+          </div>
+          <span style={{ fontSize: '9px', fontWeight: 700, color: '#6a5040', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Velnot</span>
         </div>
 
         <NavBtn icon="🎙️" label={t.nav.record} active={activeView === 'recording'} onClick={() => setActiveView('recording')} />

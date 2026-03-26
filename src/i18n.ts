@@ -28,6 +28,8 @@ export const translations = {
       sysAudio: '🔊 Sistem sesi',
       noSysAudio: '🔇 Sistem sesi yok',
       transcriptReady: 'TRANSKRİPT HAZIR — NE YAPALIM?',
+      discard: 'Sil',
+      discardConfirm: 'Bu transkripti silmek istiyor musun?',
       savedToHistory: '✅ Geçmişe kaydedildi',
       status: {
         idle:         'Başlatmak için butona bas',
@@ -129,7 +131,7 @@ export const translations = {
       processing: '⏳  Processing...', newRecord: '↩  New Recording',
       trialEnded: 'Trial ended', getLicense: 'Get License →',
       mic: '🎙 Microphone', sysAudio: '🔊 System audio', noSysAudio: '🔇 No system audio',
-      transcriptReady: 'TRANSCRIPT READY — WHAT TO DO?', savedToHistory: '✅ Saved to history',
+      transcriptReady: 'TRANSCRIPT READY — WHAT TO DO?', discard: 'Discard', discardConfirm: 'Discard this transcript?', savedToHistory: '✅ Saved to history',
       status: {
         idle: 'Press the button to start', recording: '⏺  Recording...',
         transcribing: '🎙  Transcribing...', transcribed: '📝  Transcript ready — choose an action',
@@ -221,7 +223,7 @@ export const translations = {
       processing: '⏳  Procesando...', newRecord: '↩  Nueva Grabación',
       trialEnded: 'Prueba terminada', getLicense: 'Obtener Licencia →',
       mic: '🎙 Micrófono', sysAudio: '🔊 Audio del sistema', noSysAudio: '🔇 Sin audio del sistema',
-      transcriptReady: 'TRANSCRIPCIÓN LISTA — ¿QUÉ HACEMOS?', savedToHistory: '✅ Guardado en historial',
+      transcriptReady: 'TRANSCRIPCIÓN LISTA — ¿QUÉ HACEMOS?', discard: 'Descartar', discardConfirm: '¿Descartar esta transcripción?', savedToHistory: '✅ Guardado en historial',
       status: {
         idle: 'Presiona el botón para empezar', recording: '⏺  Grabando...',
         transcribing: '🎙  Transcribiendo...', transcribed: '📝  Transcripción lista — elige una acción',
@@ -313,7 +315,7 @@ export const translations = {
       processing: '⏳  处理中...', newRecord: '↩  新录音',
       trialEnded: '试用已结束', getLicense: '获取许可证 →',
       mic: '🎙 麦克风', sysAudio: '🔊 系统音频', noSysAudio: '🔇 无系统音频',
-      transcriptReady: '转录完成 — 请选择操作', savedToHistory: '✅ 已保存到历史',
+      transcriptReady: '转录完成 — 请选择操作', discard: '丢弃', discardConfirm: '丢弃此转录？', savedToHistory: '✅ 已保存到历史',
       status: {
         idle: '按下按钮开始', recording: '⏺  录音中...',
         transcribing: '🎙  转录中...', transcribed: '📝  转录完成 — 选择操作',
@@ -405,7 +407,7 @@ export const translations = {
       processing: '⏳  جارٍ المعالجة...', newRecord: '↩  تسجيل جديد',
       trialEnded: 'انتهت الفترة التجريبية', getLicense: 'الحصول على ترخيص →',
       mic: '🎙 الميكروفون', sysAudio: '🔊 صوت النظام', noSysAudio: '🔇 لا يوجد صوت للنظام',
-      transcriptReady: 'النسخ جاهز — ماذا نفعل؟', savedToHistory: '✅ تم الحفظ في السجل',
+      transcriptReady: 'النسخ جاهز — ماذا نفعل؟', discard: 'تجاهل', discardConfirm: 'تجاهل هذا النص؟', savedToHistory: '✅ تم الحفظ في السجل',
       status: {
         idle: 'اضغط الزر للبدء', recording: '⏺  جارٍ التسجيل...',
         transcribing: '🎙  جارٍ النسخ...', transcribed: '📝  النسخ جاهز — اختر إجراءً',
@@ -497,7 +499,7 @@ export const translations = {
       processing: '⏳  प्रोसेसिंग...', newRecord: '↩  नई रिकॉर्डिंग',
       trialEnded: 'ट्रायल समाप्त', getLicense: 'लाइसेंस लें →',
       mic: '🎙 माइक्रोफ़ोन', sysAudio: '🔊 सिस्टम ऑडियो', noSysAudio: '🔇 सिस्टम ऑडियो नहीं',
-      transcriptReady: 'ट्रांस्क्रिप्ट तैयार — क्या करें?', savedToHistory: '✅ इतिहास में सहेजा',
+      transcriptReady: 'ट्रांस्क्रिप्ट तैयार — क्या करें?', discard: 'हटाएं', discardConfirm: 'इस ट्रांस्क्रिप्ट को हटाएं?', savedToHistory: '✅ इतिहास में सहेजा',
       status: {
         idle: 'शुरू करने के लिए बटन दबाएं', recording: '⏺  रिकॉर्डिंग...',
         transcribing: '🎙  ट्रांस्क्राइब हो रहा है...', transcribed: '📝  ट्रांस्क्रिप्ट तैयार — कार्रवाई चुनें',
@@ -589,7 +591,7 @@ export const translations = {
       processing: '⏳  Traitement...', newRecord: '↩  Nouvel Enregistrement',
       trialEnded: 'Essai terminé', getLicense: 'Obtenir une Licence →',
       mic: '🎙 Microphone', sysAudio: '🔊 Audio système', noSysAudio: '🔇 Pas d\'audio système',
-      transcriptReady: 'TRANSCRIPTION PRÊTE — QUE FAIRE ?', savedToHistory: '✅ Sauvegardé dans l\'historique',
+      transcriptReady: 'TRANSCRIPTION PRÊTE — QUE FAIRE ?', discard: 'Supprimer', discardConfirm: 'Supprimer cette transcription ?', savedToHistory: '✅ Sauvegardé dans l\'historique',
       status: {
         idle: 'Appuyez sur le bouton pour commencer', recording: '⏺  Enregistrement...',
         transcribing: '🎙  Transcription...', transcribed: '📝  Transcription prête — choisissez une action',
@@ -681,7 +683,7 @@ export const translations = {
       processing: '⏳  Processando...', newRecord: '↩  Nova Gravação',
       trialEnded: 'Período de teste encerrado', getLicense: 'Obter Licença →',
       mic: '🎙 Microfone', sysAudio: '🔊 Áudio do sistema', noSysAudio: '🔇 Sem áudio do sistema',
-      transcriptReady: 'TRANSCRIÇÃO PRONTA — O QUE FAZER?', savedToHistory: '✅ Salvo no histórico',
+      transcriptReady: 'TRANSCRIÇÃO PRONTA — O QUE FAZER?', discard: 'Descartar', discardConfirm: 'Descartar esta transcrição?', savedToHistory: '✅ Salvo no histórico',
       status: {
         idle: 'Pressione o botão para começar', recording: '⏺  Gravando...',
         transcribing: '🎙  Transcrevendo...', transcribed: '📝  Transcrição pronta — escolha uma ação',
@@ -773,7 +775,7 @@ export const translations = {
       processing: '⏳  Verarbeitung...', newRecord: '↩  Neue Aufnahme',
       trialEnded: 'Testphase beendet', getLicense: 'Lizenz erhalten →',
       mic: '🎙 Mikrofon', sysAudio: '🔊 Systemton', noSysAudio: '🔇 Kein Systemton',
-      transcriptReady: 'TRANSKRIPT BEREIT — WAS TUN?', savedToHistory: '✅ Im Verlauf gespeichert',
+      transcriptReady: 'TRANSKRIPT BEREIT — WAS TUN?', discard: 'Verwerfen', discardConfirm: 'Dieses Transkript verwerfen?', savedToHistory: '✅ Im Verlauf gespeichert',
       status: {
         idle: 'Drücken Sie den Knopf zum Starten', recording: '⏺  Aufnahme läuft...',
         transcribing: '🎙  Transkribierung...', transcribed: '📝  Transkript bereit — Aktion wählen',

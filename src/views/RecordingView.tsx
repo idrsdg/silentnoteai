@@ -402,6 +402,20 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
                 </button>
               ))}
             </div>
+            <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => { if (window.confirm((t.record as any).discardConfirm)) reset(); }}
+                style={{
+                  padding: '7px 16px', borderRadius: '8px', border: '1px solid #2a2a2a',
+                  background: 'transparent', color: '#666', fontSize: '12px', cursor: 'pointer',
+                  transition: 'color 0.15s, border-color 0.15s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#ef4444'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#666'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a2a'; }}
+              >
+                🗑 {(t.record as any).discard}
+              </button>
+            </div>
           </div>
         </div>
       )}
