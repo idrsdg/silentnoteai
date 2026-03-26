@@ -638,68 +638,51 @@
     <div class="section-label" data-i18n="compare.label">Karşılaştırma</div>
     <h2 class="section-title" data-i18n="compare.title">Neden Velnot?</h2>
 
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th></th>
-          <th class="us">Velnot</th>
-          <th>Otter.ai</th>
-          <th>Fireflies</th>
-          <th>Fathom</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td data-i18n="compare.row1">Toplantıya bot eklenir mi?</td>
-          <td class="yes us" data-i18n="compare.sna1">❌ Eklenmez</td>
-          <td class="no" data-i18n="comp.botYes">✅ Bot kullanıcı girer</td>
-          <td class="no" data-i18n="comp.botYes">✅ Bot kullanıcı girer</td>
-          <td class="no" data-i18n="comp.botYes">✅ Bot kullanıcı girer</td>
-        </tr>
-        <tr>
-          <td data-i18n="compare.row2">Veriler nerede?</td>
-          <td class="us" data-i18n="compare.sna2">💻 Sadece sende</td>
-          <td class="no" data-i18n="comp.cloud">☁️ Bulut</td>
-          <td class="no" data-i18n="comp.cloud">☁️ Bulut</td>
-          <td class="no" data-i18n="comp.cloud">☁️ Bulut</td>
-        </tr>
-        <tr>
-          <td data-i18n="compare.row3">Lokal çalışma</td>
-          <td class="yes us" data-i18n="compare.sna3">✅ Evet</td>
-          <td class="no">❌</td>
-          <td class="no">❌</td>
-          <td class="no">❌</td>
-        </tr>
-        <tr>
-          <td data-i18n="compare.row4">API maliyeti</td>
-          <td class="us" data-i18n="compare.sna4">Kendi key'in</td>
-          <td data-i18n="comp.otterPrice">$16.99/ay</td>
-          <td data-i18n="comp.ffPrice">$18/ay</td>
-          <td data-i18n="comp.fathomPrice">Ücretsiz*</td>
-        </tr>
-        <tr>
-          <td data-i18n="compare.row5">Türkçe desteği</td>
-          <td class="yes us" data-i18n="compare.sna5">✅ Tam</td>
-          <td data-i18n="comp.partial">⚠️ Kısmi</td>
-          <td data-i18n="comp.partial">⚠️ Kısmi</td>
-          <td class="no">❌</td>
-        </tr>
-        <tr>
-          <td data-i18n="comp.row6">Aylık fiyat</td>
-          <td class="yes us" data-i18n="compare.pricing">✅ $4.99/ay'dan</td>
-          <td class="no" data-i18n="comp.otterPrice">$16.99/ay</td>
-          <td class="no" data-i18n="comp.ffPrice">$18/ay</td>
-          <td class="no" data-i18n="comp.fathomPrice">Ücretsiz*</td>
-        </tr>
-        <tr>
-          <td data-i18n="comp.row7">Lifetime lisans</td>
-          <td class="yes us" data-i18n="compare.lifetime">✅ $159.99 (tek seferlik)</td>
-          <td class="no">❌</td>
-          <td class="no">❌</td>
-          <td class="no">❌</td>
-        </tr>
-      </tbody>
-    </table>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:48px;max-width:900px;margin-left:auto;margin-right:auto;">
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">🚫</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="compare.row1">Toplantıya bot eklenir mi?</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)" data-i18n="compare.sna1">❌ Eklenmez</div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">🔒</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="compare.row2">Veriler nerede?</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)" data-i18n="compare.sna2">💻 Sadece sende</div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">💻</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="compare.row3">Lokal çalışma</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)" data-i18n="compare.sna3">✅ Evet</div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">🔑</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="compare.row4">API maliyeti</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)" data-i18n="compare.sna4">Kendi key'in</div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">🌍</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="compare.row5">Dil desteği</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)" data-i18n="compare.sna5">✅ 99 Dil (Whisper)</div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">💰</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="comp.row6">Aylık fiyat</div>
+        <div style="font-size:16px;font-weight:700;color:#f97316" data-i18n="compare.pricing">✅ $4.99/ay'dan</div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:28px">⭐</div>
+        <div style="font-size:13px;color:var(--muted)" data-i18n="comp.row7">Lifetime lisans</div>
+        <div style="font-size:16px;font-weight:700;color:#f97316" data-i18n="compare.lifetime">✅ $159.99 (tek seferlik)</div>
+      </div>
+
+    </div>
   </div>
 </section>
 
@@ -740,6 +723,39 @@
           <div>
             <div class="testimonial-name">Emre S.</div>
             <div class="testimonial-role" data-i18n="users.t3role">Yazılım Geliştirici</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I manage distributed teams across three time zones. Velnot automatically handles notes for every standup and planning session. The bot-free recording is a game changer for sensitive client calls — no one ever asks who's recording."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">J</div>
+          <div>
+            <div class="testimonial-name">James T. 🇺🇸</div>
+            <div class="testimonial-role">Engineering Manager</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"As a lawyer, data confidentiality is non-negotiable. Velnot processes everything locally — nothing leaves my machine. The transcription accuracy on multi-speaker calls is outstanding. The lifetime plan was an easy decision."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#10b981,#059669)">S</div>
+          <div>
+            <div class="testimonial-name">Sarah L. 🇸🇬</div>
+            <div class="testimonial-role">Legal Counsel</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Works perfectly with Google Meet and Slack Huddle. Spanish transcription quality with Whisper is excellent. I paid $159.99 once and never think about it again — far better than $17-18/month subscriptions."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">C</div>
+          <div>
+            <div class="testimonial-name">Carlos R. 🇧🇷</div>
+            <div class="testimonial-role">Product Lead</div>
           </div>
         </div>
       </div>
@@ -892,6 +908,24 @@
         </button>
         <div class="faq-answer">
           <p data-i18n-html="faq.a6">Ödeme yapıldıktan sonra Lemon Squeezy üzerinden lisans key'in e-posta ile gönderilir. Uygulamayı bu sayfadan indirip lisans key'ini girerek aktivasyon yapabilirsin. Sorularını <a href="mailto:support@velnot.com" style="color:var(--accent)">support@velnot.com</a> adresine iletebilirsin.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>Is there a free trial?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. Velnot includes a free trial with <strong>5 sessions</strong> and <strong>7 days</strong> — no credit card required. After the trial ends, choose a plan to continue. The license key is sent instantly to your email after purchase.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>Which languages does it support?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Velnot uses <strong>OpenAI Whisper</strong> for transcription, which supports <strong>99 languages</strong> including English, Turkish, Spanish, French, German, Arabic, Hindi, Japanese, Korean, Chinese, Indonesian, Portuguese, Russian, Bengali and many more. The AI summary is generated in the same language as the transcript.</p>
         </div>
       </div>
     </div>
