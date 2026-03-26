@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useT } from '../LanguageContext';
 
 interface LicenseStatus {
@@ -120,26 +120,7 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
 
       {/* Transcription Language */}
       <SettingCard title={t.settings.transcribeLang.title} desc={t.settings.transcribeLang.desc}>
-        <select
-          value={language}
-          onChange={e => setLanguage(e.target.value)}
-          style={{
-            padding: '8px 12px', borderRadius: '8px',
-            background: '#0e0a07', border: '1px solid #2a2a2a',
-            color: '#f0f0f0', fontSize: '13px', outline: 'none', cursor: 'pointer',
-          }}
-        >
-          <option value="tr">Türkçe</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="de">Deutsch</option>
-          <option value="pt">Português</option>
-          <option value="zh">中文</option>
-          <option value="ar">العربية</option>
-          <option value="hi">हिन्दी</option>
-          <option value="auto">Auto</option>
-        </select>
+        <LangDropdown value={language} onChange={setLanguage} />
       </SettingCard>
 
       {/* Auto delete */}
@@ -293,6 +274,83 @@ function PlanCard({ status, t, onGetLicense }: { status: { type: string; session
         >
           {t.settings.plan.manage}
         </button>
+      )}
+    </div>
+  );
+}
+
+const LANG_OPTIONS = [
+  { value: 'tr', label: 'Türkçe',    flag: '🇹🇷' },
+  { value: 'en', label: 'English',   flag: '🇬🇧' },
+  { value: 'es', label: 'Español',   flag: '🇪🇸' },
+  { value: 'fr', label: 'Français',  flag: '🇫🇷' },
+  { value: 'de', label: 'Deutsch',   flag: '🇩🇪' },
+  { value: 'pt', label: 'Português', flag: '🇵🇹' },
+  { value: 'zh', label: '中文',      flag: '🇨🇳' },
+  { value: 'ar', label: 'العربية',  flag: '🇸🇦' },
+  { value: 'hi', label: 'हिन्दी',   flag: '🇮🇳' },
+  { value: 'auto', label: 'Auto',    flag: '🌐' },
+];
+
+function LangDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const selected = LANG_OPTIONS.find(o => o.value === value) ?? LANG_OPTIONS[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '8px 12px', borderRadius: '8px',
+          background: '#0e0a07', border: `1px solid ${open ? '#f97316' : '#2a2a2a'}`,
+          color: '#f0f0f0', fontSize: '13px', cursor: 'pointer',
+          minWidth: '160px', justifyContent: 'space-between',
+          transition: 'border-color 0.15s',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '16px' }}>{selected.flag}</span>
+          <span>{selected.label}</span>
+        </span>
+        <span style={{ color: '#555', fontSize: '10px', marginLeft: '4px' }}>▼</span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', left: 0,
+          background: '#1a1109', border: '1px solid #2a1e14', borderRadius: '10px',
+          padding: '4px', minWidth: '160px', zIndex: 200,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.7)',
+        }}>
+          {LANG_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                width: '100%', padding: '7px 10px', borderRadius: '7px', border: 'none',
+                background: opt.value === value ? 'rgba(249,115,22,0.18)' : 'transparent',
+                color: opt.value === value ? '#fdba74' : '#c4b09a',
+                fontSize: '13px', cursor: 'pointer', textAlign: 'left',
+              }}
+            >
+              <span style={{ fontSize: '15px' }}>{opt.flag}</span>
+              <span>{opt.label}</span>
+              {opt.value === value && <span style={{ marginLeft: 'auto', color: '#f97316', fontSize: '11px' }}>✓</span>}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
