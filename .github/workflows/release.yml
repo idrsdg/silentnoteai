@@ -27,6 +27,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Copy stable setup filename
+        shell: powershell
+        run: |
+          $exe = Get-ChildItem "out/make/squirrel.windows/x64/*.Setup.exe" | Select-Object -First 1
+          Copy-Item $exe.FullName "out/make/squirrel.windows/x64/Velnot-Setup.exe"
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
