@@ -30,8 +30,9 @@ jobs:
       - name: Copy stable setup filename
         shell: powershell
         run: |
-          $exe = Get-ChildItem "out/make/squirrel.windows/x64/*.Setup.exe" | Select-Object -First 1
-          Copy-Item $exe.FullName "out/make/squirrel.windows/x64/Velnot-Setup.exe"
+          $exe = Get-ChildItem "out/make/squirrel.windows/x64/" | Where-Object { $_.Name -like "*Setup*.exe" } | Select-Object -First 1
+          if ($exe) { Copy-Item $exe.FullName "out/make/squirrel.windows/x64/Velnot-Setup.exe" }
+          else { Write-Output "No Setup exe found, skipping." }
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
