@@ -40,6 +40,7 @@ export const useT = () => useContext(LangContext);
 // Maps known main-process error strings → localized messages
 export function localizeError(msg: string, t: T): string {
   const m = msg ?? '';
+  if (m.includes('QUOTA_EXCEEDED')) return t.errors.quotaExceeded;
   if (m.includes('OpenAI API key') && m.includes('ayarlanmamış')) return t.errors.noOpenAIKey;
   if (m.includes('AssemblyAI API key') && m.includes('ayarlanmamış')) return t.errors.noAssemblyKey;
   if (m.includes('AssemblyAI upload')) return t.errors.assemblyUpload;
