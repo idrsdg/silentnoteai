@@ -812,6 +812,25 @@
   </div>
 </section>
 
+<!-- Account / Magic Link -->
+<section id="account" style="border-top:1px solid var(--border);">
+  <div class="container" style="max-width:560px;text-align:center;">
+    <div class="section-label" data-i18n="account.label">Account</div>
+    <h2 class="section-title" data-i18n="account.title">Already have a license? Sign in</h2>
+    <p class="section-sub" data-i18n="account.sub">Enter the email you used to purchase and we'll send you a login link for the app.</p>
+    <div id="magicForm" style="display:flex;gap:10px;max-width:420px;margin:24px auto 0;">
+      <input type="email" id="magicEmail" placeholder="email@example.com"
+        style="flex:1;padding:10px 14px;border-radius:9px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;outline:none;"
+        onkeydown="if(event.key==='Enter')sendMagicLink()" />
+      <button onclick="sendMagicLink()" id="magicBtn"
+        style="padding:10px 18px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;"
+        data-i18n="account.sendLink">Send Magic Link</button>
+    </div>
+    <div id="magicSent" style="display:none;margin-top:16px;padding:12px 20px;border-radius:10px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);color:#fdba74;font-size:14px;" data-i18n="account.checkEmail">📧 Check your email. The link is valid for 15 minutes.</div>
+    <div id="magicError" style="display:none;margin-top:10px;font-size:13px;color:#f87171;" data-i18n="account.notFound">No license found for this email address.</div>
+  </div>
+</section>
+
 <!-- Privacy -->
 <section id="privacy" style="background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
   <div class="container">
@@ -1025,6 +1044,37 @@
     }, 300);
   }
 
+  async function sendMagicLink() {
+    var email = document.getElementById('magicEmail').value.trim();
+    if (!email) return;
+    var btn = document.getElementById('magicBtn');
+    var lang = localStorage.getItem('sna-lang') || 'en';
+    var t = (T[lang] && T[lang].account) ? T[lang].account : T.en.account;
+    btn.disabled = true;
+    btn.textContent = t.sending;
+    document.getElementById('magicError').style.display = 'none';
+    try {
+      var res = await fetch('https://velnot-backend.onrender.com/api/auth/request-magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email }),
+      });
+      var data = await res.json();
+      if (data.sent) {
+        document.getElementById('magicForm').style.display = 'none';
+        document.getElementById('magicSent').style.display = 'block';
+      } else {
+        document.getElementById('magicError').style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = t.sendLink;
+      }
+    } catch (e) {
+      document.getElementById('magicError').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = t.sendLink;
+    }
+  }
+
   function triggerDownload() {
     track('download_no_email');
     startFileDownload();
@@ -1144,6 +1194,7 @@
       mock: { status: '⏺ Kayıt yapılıyor...', stop: '⏹ Durdur & Özetle', transcript: 'Transkript', summary: 'Özet' },
       comp: { row6: 'Aylık fiyat', row7: 'Lifetime lisans', botYes: '✅ Bot kullanıcı girer', cloud: '☁️ Bulut', otterPrice: '$16.99/ay', ffPrice: '$18/ay', fathomPrice: 'Ücretsiz*', partial: '⚠️ Kısmi', subNo: '❌ Abonelik' },
       cta: { title: 'Bir sonraki toplantını<br><span style="background:linear-gradient(135deg,#f97316,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">akıllıca not al</span>', sub: 'Bot yok · Bulut yok · Kredi kartı gerekmez', feat1: 'Anında kurulum', feat2: 'Windows 10/11', feat3: 'Otomatik güncelleme', feat4: 'Açık kaynak' },
+      account: { label: 'Hesap', title: 'Lisansın var mı? Giriş yap', sub: 'Satın aldığın email adresini gir, uygulamaya giriş linki gönderelim.', emailPlaceholder: 'satın almada kullandığın email', sendLink: 'Magic Link Gönder', sending: 'Gönderiliyor...', checkEmail: '📧 Email\'ini kontrol et. Link 15 dakika geçerli.', notFound: 'Bu email ile kayıtlı lisans bulunamadı.' },
       users: { label: 'Kullanıcılar', title: 'İlk kullananlar ne diyor?', t1: '"Zoom toplantılarımda artık not almak zorunda kalmıyorum. Durdur & Özetle\'ye basıyorum, 30 saniyede her şey hazır. Rakip uygulamalarda bot girince herkes sormaya başlıyordu — burada kimse fark etmiyor."', t1role: 'Proje Yöneticisi', t2: '"Müşteri görüşmelerinde çok işe yarıyor. Transkript + özet + aksiyon listesi tek seferde geliyor. $9.99/ay\'dan başlayan fiyatlar ve API key gerektirmemesi rakip uygulamalara göre çok daha mantıklı."', t2role: 'Satış Danışmanı', t3: '"Türkçe desteği mükemmel. Diğer araçlarda Türkçe transkript kalitesi berbattı. Whisper ile neredeyse hatasız. Verilerimin buluta gitmemesi de benim için kritikti."', t3role: 'Yazılım Geliştirici' },
     },
     en: {
@@ -1174,6 +1225,7 @@
       mock: { status: '⏺ Recording...', stop: '⏹ Stop & Summarize', transcript: 'Transcript', summary: 'Summary' },
       comp: { row6: 'Monthly price', row7: 'Lifetime license', botYes: '✅ Bot joins', cloud: '☁️ Cloud', otterPrice: '$16.99/mo', ffPrice: '$18/mo', fathomPrice: 'Free*', partial: '⚠️ Partial', subNo: '❌ Subscription' },
       cta: { title: 'Take your next meeting<br><span style="background:linear-gradient(135deg,#f97316,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">notes the smart way</span>', sub: 'No bot · No cloud · No credit card', feat1: 'Instant setup', feat2: 'Windows 10/11', feat3: 'Auto updates', feat4: 'Open source' },
+      account: { label: 'Account', title: 'Already have a license? Sign in', sub: 'Enter the email you used to purchase and we\'ll send you a login link for the app.', emailPlaceholder: 'email you used to purchase', sendLink: 'Send Magic Link', sending: 'Sending...', checkEmail: '📧 Check your email. The link is valid for 15 minutes.', notFound: 'No license found for this email address.' },
       users: { label: 'Users', title: 'What early adopters say', t1: '"I no longer need to take notes in my Zoom meetings. I press Stop & Summarize and everything is ready in 30 seconds. With competitor apps, everyone asked questions when the bot joined — here no one notices."', t1role: 'Project Manager', t2: '"Very useful in client meetings. Transcript + summary + action list all at once. Starting at $9.99/mo with no API key required — much more sensible than competitor subscriptions at $17-18/mo."', t2role: 'Sales Consultant', t3: '"Turkish support is excellent. In other tools, Turkish transcript quality was terrible. With Whisper it\'s nearly flawless. Not having my data go to the cloud was also critical for me."', t3role: 'Software Developer' },
     },
     es: {
@@ -1528,7 +1580,9 @@
   };
 
   function _t(obj, key) {
-    return key.split('.').reduce(function(o, k) { return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
+    var result = key.split('.').reduce(function(o, k) { return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
+    if (result !== undefined) return result;
+    return key.split('.').reduce(function(o, k) { return (o && o[k] !== undefined) ? o[k] : undefined; }, T.en);
   }
 
   function setLang(code) {
