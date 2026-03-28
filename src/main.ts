@@ -105,7 +105,7 @@ const createWindow = () => {
 if (app.isPackaged) {
   updateElectronApp({
     repo: 'idrsdg/velnot',
-    updateInterval: '1 hour',
+    updateInterval: '5 minutes',
     notifyUser: true,
   });
 }
@@ -132,6 +132,7 @@ app.on('second-instance', (_event, argv) => {
   if (url) handleAuthUrl(url);
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
     mainWindow.focus();
   }
 });
