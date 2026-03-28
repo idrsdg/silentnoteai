@@ -2,7 +2,7 @@ import { ipcMain, shell, BrowserWindow } from 'electron';
 import { buildAppMenu } from './menu';
 import { getSessions, getSession, searchSessions, deleteSession, insertSession, updateSession, NewSession, Session } from './db';
 import { getSetting, setSetting } from './settings';
-import { generateSummary, transcribeBuffer, transcribeWithDiarization, transcribeChunk, getUsage, ProcessMode } from './ai';
+import { generateSummary, transcribeBuffer, transcribeWithDiarization, transcribeChunk, transcribeFast, getUsage, ProcessMode } from './ai';
 import { saveNoteAsText, saveNoteAsMarkdown, saveNoteAsDocx, saveNoteAsPdf, NoteData } from './files';
 import { saveSessionAudio } from './audio';
 import { getLicenseStatus, activateLicense } from './license';
@@ -59,6 +59,14 @@ export function registerIpcHandlers() {
   // Real-time chunk transcription (always Whisper, no diarization overhead)
   ipcMain.handle('audio:transcribeChunk', async (_e, audioData: ArrayBuffer, language: string) => {
     return transcribeChunk(Buffer.from(audioData), language || 'tr');
+  });
+
+  ipcMain.handle('audio:transcribeFast', async (_e, audioData: ArrayBuffer, language: string) => {
+    const usage = await getUsage();
+    if (usage.limit !== -1 && usage.remaining <= 0) {
+      throw new Error('QUOTA_EXCEEDED');
+    }
+    return transcribeFast(Buffer.from(audioData), language || 'tr');
   });
 
   // ── Audio Storage ─────────────────────────────────────────

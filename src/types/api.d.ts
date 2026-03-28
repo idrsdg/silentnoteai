@@ -64,6 +64,7 @@ declare global {
       generateSummary: (transcript: string, mode?: string) => Promise<AISummaryResult>;
       transcribeAudio: (audioData: ArrayBuffer, language: string) => Promise<DiarizationResult>;
       transcribeChunk: (audioData: ArrayBuffer, language: string) => Promise<string>;
+      transcribeFast: (audioData: ArrayBuffer, language: string) => Promise<string>;
 
       // Audio
       saveAudio: (sessionId: string, audioData: ArrayBuffer) => Promise<string>; // returns audio path

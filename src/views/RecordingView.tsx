@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useT, localizeError } from '../LanguageContext';
 import { DiarizationResult, Utterance } from '../types/api';
+import { LANGUAGES } from '../i18n';
 
 type State = 'idle' | 'recording' | 'transcribing' | 'transcribed' | 'analyzing' | 'done';
 type ProcessMode = 'summary' | 'action_plan' | 'meeting_notes';
+type ExportFormat = 'txt' | 'md' | 'pdf' | 'docx';
 
 interface Props {
   licenseStatus?: { type: string; sessionsUsed?: number; sessionsLimit?: number; daysLeft?: number } | null;
@@ -31,8 +33,13 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
   const [showConsent, setShowConsent] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
-
+  const [recordingLang, setRecordingLang] = useState('auto');
   const [processingElapsed, setProcessingElapsed] = useState(0);
+  const [isSessionFinalized, setIsSessionFinalized] = useState(false);
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState<ExportFormat | null>(null);
+  const [exportPath, setExportPath] = useState('');
+  const [copyMenu, setCopyMenu] = useState<{ x: number; y: number; source: 'preview' | 'editor'; allText: string } | null>(null);
 
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const liveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -53,10 +60,18 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
   const savedSessionIdRef = useRef<string | null>(null);
   const diarizationTokenRef = useRef(0);
   const latestDiarizationRef = useRef<DiarizationResult | null>(null);
+  const draftPromiseRef = useRef<Promise<string | null> | null>(null);
+  const audioSavedForSessionRef = useRef<string | null>(null);
+  const isSessionFinalizedRef = useRef(false);
+  const previewTranscriptRef = useRef<HTMLTextAreaElement | null>(null);
+  const editorTranscriptRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     window.api.getSetting('recording_consent_given').then(val => {
       if (val === 'true') setConsentGiven(true);
+    });
+    window.api.getSetting('language').then(val => {
+      if (val) setRecordingLang(val);
     });
   }, []);
 
@@ -71,6 +86,10 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
   useEffect(() => {
     savedSessionIdRef.current = savedSessionId;
   }, [savedSessionId]);
+
+  useEffect(() => {
+    isSessionFinalizedRef.current = isSessionFinalized;
+  }, [isSessionFinalized]);
 
   useEffect(() => {
     if (state === 'transcribing' || state === 'analyzing') {
@@ -96,6 +115,22 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     };
   }, []);
 
+  useEffect(() => {
+    if (!copyMenu) return;
+    const close = () => setCopyMenu(null);
+    const closeOnEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCopyMenu(null);
+    };
+    window.addEventListener('click', close);
+    window.addEventListener('contextmenu', close);
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      window.removeEventListener('click', close);
+      window.removeEventListener('contextmenu', close);
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [copyMenu]);
+
   const handleStartClick = () => {
     if (!consentGiven) {
       setConsentChecked(false);
@@ -112,12 +147,106 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     startRecording();
   };
 
+  const deriveDraftTitle = (value: string) => {
+    const normalized = value.replace(/\s+/g, ' ').trim();
+    if (!normalized) return 'Untitled';
+    return normalized.slice(0, 72);
+  };
+
+  const buildExportPayload = () => ({
+    title: title || deriveDraftTitle(editTranscript || transcriptRef.current),
+    date: startedAtRef.current || Date.now(),
+    duration_sec: elapsed,
+    summary,
+    action_items: actions,
+    transcript: editTranscript || transcriptRef.current,
+  });
+
+  const ensureDraftSession = async (baseTranscript: string) => {
+    if (savedSessionIdRef.current) {
+      const existing = await window.api.getSession(savedSessionIdRef.current);
+      if (existing) {
+        await window.api.updateSession({
+          ...existing,
+          title: existing.title || deriveDraftTitle(baseTranscript),
+          started_at: startedAtRef.current,
+          ended_at: endedAtRef.current,
+          duration_sec: elapsed,
+          transcript: baseTranscript,
+          summary: existing.summary || '[]',
+          action_items: existing.action_items || '[]',
+          tags: existing.tags || JSON.stringify(['draft']),
+          utterances: latestDiarizationRef.current?.utterances?.length
+            ? JSON.stringify(latestDiarizationRef.current.utterances)
+            : existing.utterances,
+        });
+      }
+      if (audioBlobRef.current && audioSavedForSessionRef.current !== savedSessionIdRef.current) {
+        const audioBuf = await audioBlobRef.current.arrayBuffer();
+        await window.api.saveAudio(savedSessionIdRef.current, audioBuf);
+        audioSavedForSessionRef.current = savedSessionIdRef.current;
+      }
+      return savedSessionIdRef.current;
+    }
+
+    if (!draftPromiseRef.current) {
+      draftPromiseRef.current = (async () => {
+        const saved = await window.api.saveSession({
+          title: deriveDraftTitle(baseTranscript),
+          started_at: startedAtRef.current,
+          ended_at: endedAtRef.current,
+          duration_sec: elapsed,
+          transcript: baseTranscript,
+          summary: '[]',
+          action_items: '[]',
+          tags: JSON.stringify(['draft']),
+          utterances: latestDiarizationRef.current?.utterances?.length
+            ? JSON.stringify(latestDiarizationRef.current.utterances)
+            : undefined,
+        } as any);
+
+        savedSessionIdRef.current = saved.id;
+        setSavedSessionId(saved.id);
+
+        if (audioBlobRef.current && audioSavedForSessionRef.current !== saved.id) {
+          const audioBuf = await audioBlobRef.current.arrayBuffer();
+          await window.api.saveAudio(saved.id, audioBuf);
+          audioSavedForSessionRef.current = saved.id;
+        }
+
+        return saved.id;
+      })().finally(() => {
+        draftPromiseRef.current = null;
+      });
+    }
+
+    return draftPromiseRef.current;
+  };
+
+  const transcribePendingTail = async (lang: string) => {
+    const newChunks = chunksRef.current.slice(lastLiveChunkRef.current);
+    if (newChunks.length === 0) return '';
+    lastLiveChunkRef.current = chunksRef.current.length;
+    const snapshot = new Blob(newChunks, { type: 'audio/webm' });
+    const buf = await snapshot.arrayBuffer();
+    return window.api.transcribeChunk(buf, lang);
+  };
+
+  const copyToClipboard = async (value: string) => {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+  };
+
   const startRecording = async () => {
     setError('');
     setHasSysAudio(false);
     setLiveTranscript('');
     setUtterances([]);
+    setIsSessionFinalized(false);
+    setExportPath('');
     latestDiarizationRef.current = null;
+    isSessionFinalizedRef.current = false;
+    audioSavedForSessionRef.current = null;
     diarizationTokenRef.current += 1;
     try {
       const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -175,7 +304,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
       setState('recording');
 
       // Real-time transcription every 10 seconds so shorter recordings get a preview sooner.
-      const lang = (await window.api.getSetting('language')) ?? 'tr';
+      const lang = recordingLang || 'auto';
       liveTimerRef.current = setInterval(async () => {
         const from = lastLiveChunkRef.current;
         const newChunks = chunksRef.current.slice(from);
@@ -237,9 +366,10 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     audioCtxRef.current?.close();
 
     try {
-      const lang = (await window.api.getSetting('language')) ?? 'tr';
+      const lang = recordingLang || 'auto';
       const arrayBuffer = await audioBlob.arrayBuffer();
       const requestId = ++diarizationTokenRef.current;
+      const pendingTailPromise = transcribePendingTail(lang).catch(() => '');
 
       // AssemblyAI diarization always runs fully in background
       window.api.transcribeAudio(arrayBuffer, lang)
@@ -252,20 +382,41 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
         setEditTranscript(capturedLive);
         setLiveTranscript('');
         setState('transcribed');
+        void ensureDraftSession(capturedLive);
+        pendingTailPromise.then(tail => {
+          if (!tail || stateRef.current === 'done') return;
+          const merged = `${capturedLive} ${tail}`.trim();
+          setTranscript(merged);
+          if (stateRef.current === 'transcribed') setEditTranscript(merged);
+          void ensureDraftSession(merged);
+        });
         window.api.transcribeFast(arrayBuffer, lang)
           .then(result => {
             if (result && stateRef.current !== 'done') {
               setTranscript(result);
               if (stateRef.current === 'transcribed') setEditTranscript(result);
+              void ensureDraftSession(result);
             }
           }).catch(() => {});
       } else {
-        // Short recording (< 10s): no live transcript yet, wait for Whisper
-        const fastTranscript = await window.api.transcribeFast(arrayBuffer, lang);
-        setTranscript(fastTranscript);
-        setEditTranscript(fastTranscript);
+        // Short recording: try the final unsent chunk first, then refine in background if needed.
+        const immediateTranscript = await pendingTailPromise;
+        const initialTranscript = immediateTranscript || await window.api.transcribeFast(arrayBuffer, lang);
+        setTranscript(initialTranscript);
+        setEditTranscript(initialTranscript);
         setLiveTranscript('');
         setState('transcribed');
+        void ensureDraftSession(initialTranscript);
+        if (immediateTranscript) {
+          window.api.transcribeFast(arrayBuffer, lang)
+            .then(result => {
+              if (result && result !== initialTranscript && stateRef.current !== 'done') {
+                setTranscript(result);
+                if (stateRef.current === 'transcribed') setEditTranscript(result);
+                void ensureDraftSession(result);
+              }
+            }).catch(() => {});
+        }
       }
     } catch (e: any) {
       setError(localizeError(e?.message ?? '', t));
@@ -278,37 +429,36 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     setState('analyzing');
     try {
       const baseTranscript = transcriptRef.current;
-      const result = await window.api.generateSummary(baseTranscript, mode);
+      const [draftId, result] = await Promise.all([
+        ensureDraftSession(baseTranscript),
+        window.api.generateSummary(baseTranscript, mode),
+      ]);
       const diarization = latestDiarizationRef.current;
       setTitle(result.title);
       setSummary(result.summary);
       setActions(result.action_items);
       setState('done');
-
-      const saved = await window.api.saveSession({
-        title: result.title || 'Untitled',
-        started_at: startedAtRef.current,
-        ended_at: endedAtRef.current,
-        duration_sec: elapsed,
-        transcript: baseTranscript,
-        summary: JSON.stringify(result.summary),
-        action_items: JSON.stringify(result.action_items),
-        tags: JSON.stringify([mode]),
-        utterances: diarization?.utterances?.length ? JSON.stringify(diarization.utterances) : undefined,
-      } as any);
-
-      setSavedSessionId(saved.id);
       setEditTranscript(baseTranscript);
+      setExportPath('');
 
-      // Save audio file linked to session
-      if (audioBlobRef.current) {
-        try {
-          const audioBuf = await audioBlobRef.current.arrayBuffer();
-          await window.api.saveAudio(saved.id, audioBuf);
-        } catch { /* audio save failure is non-fatal */ }
+      if (draftId) {
+        const draft = await window.api.getSession(draftId);
+        if (draft) {
+          await window.api.updateSession({
+            ...draft,
+            title: result.title || deriveDraftTitle(baseTranscript),
+            started_at: startedAtRef.current,
+            ended_at: endedAtRef.current,
+            duration_sec: elapsed,
+            transcript: baseTranscript,
+            summary: JSON.stringify(result.summary),
+            action_items: JSON.stringify(result.action_items),
+            tags: JSON.stringify(['draft', mode]),
+            utterances: diarization?.utterances?.length ? JSON.stringify(diarization.utterances) : draft.utterances,
+          });
+          setSavedSessionId(draftId);
+        }
       }
-
-      onSessionSaved?.();
     } catch (e: any) {
       setError(localizeError(e?.message ?? '', t));
       setState('transcribed');
@@ -329,9 +479,97 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     }
   };
 
-  const reset = () => {
-    diarizationTokenRef.current += 1;
+  const finalizeSession = async () => {
+    try {
+      const sessionId = await ensureDraftSession(editTranscript || transcriptRef.current);
+      if (!sessionId) return false;
+
+      setSaveBusy(true);
+      const session = await window.api.getSession(sessionId);
+      if (!session) return false;
+      await window.api.updateSession({
+        ...session,
+        title: title || deriveDraftTitle(editTranscript || transcriptRef.current),
+        started_at: startedAtRef.current,
+        ended_at: endedAtRef.current,
+        duration_sec: elapsed,
+        transcript: editTranscript || transcriptRef.current,
+        summary: JSON.stringify(summary),
+        action_items: JSON.stringify(actions),
+        tags: JSON.stringify(activeMode ? [activeMode] : ['transcript']),
+        utterances: latestDiarizationRef.current?.utterances?.length
+          ? JSON.stringify(latestDiarizationRef.current.utterances)
+          : session.utterances,
+      });
+      setIsSessionFinalized(true);
+      isSessionFinalizedRef.current = true;
+      onSessionSaved?.();
+      return true;
+    } catch (e: any) {
+      setError(localizeError(e?.message ?? '', t));
+      return false;
+    } finally {
+      setSaveBusy(false);
+    }
+  };
+
+  const handleDiscard = async () => {
+    if (!window.confirm((t.record as any).discardConfirm)) return;
+    if (savedSessionIdRef.current) {
+      await window.api.deleteSession(savedSessionIdRef.current);
+    }
+    reset(true);
+  };
+
+  const handleExport = async (format: ExportFormat) => {
+    setExportingFormat(format);
+    setExportPath('');
+    try {
+      const filePath = await window.api.exportSession(buildExportPayload(), format);
+      setExportPath(filePath);
+    } finally {
+      setExportingFormat(null);
+    }
+  };
+
+  const openCopyMenu = (
+    e: React.MouseEvent<HTMLTextAreaElement>,
+    source: 'preview' | 'editor',
+    allText: string,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCopyMenu({ x: e.clientX, y: e.clientY, source, allText });
+  };
+
+  const handleCopySelection = async () => {
+    const el = copyMenu?.source === 'preview' ? previewTranscriptRef.current : editorTranscriptRef.current;
+    const selected = el ? el.value.slice(el.selectionStart, el.selectionEnd) : '';
+    await copyToClipboard(selected || copyMenu?.allText || '');
+    setCopyMenu(null);
+  };
+
+  const handleSelectAll = () => {
+    const el = copyMenu?.source === 'preview' ? previewTranscriptRef.current : editorTranscriptRef.current;
+    el?.focus();
+    el?.select();
+    setCopyMenu(null);
+  };
+
+  const reset = (skipDraftCleanup = false) => {
+    if (!skipDraftCleanup && savedSessionIdRef.current && !isSessionFinalizedRef.current) {
+      void window.api.deleteSession(savedSessionIdRef.current);
+    }
+    draftPromiseRef.current = null;
+    audioSavedForSessionRef.current = null;
+    isSessionFinalizedRef.current = false;
     latestDiarizationRef.current = null;
+    setIsSessionFinalized(false);
+    setSaveBusy(false);
+    setExportingFormat(null);
+    setExportPath('');
+    setCopyMenu(null);
+    diarizationTokenRef.current += 1;
     setState('idle');
     setElapsed(0);
     setProcessingElapsed(0);
@@ -347,6 +585,12 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     setSavedSessionId(null);
     setEditTranscript('');
     audioBlobRef.current = null;
+    savedSessionIdRef.current = null;
+  };
+
+  const handleRecordingLangChange = async (value: string) => {
+    setRecordingLang(value);
+    await window.api.setSetting('language', value);
   };
 
   const fmt = (s: number) =>
@@ -367,6 +611,14 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
     : activeMode === 'action_plan'
       ? t.record.results.actionPlan
       : t.record.results.summary;
+  const saveLabel = t.history.save ?? 'Save';
+  const copySelectionLabel = (t.record as any).copySelection ?? 'Seçileni kopyala';
+  const copyAllLabel = (t.record as any).copyAll ?? 'Tümünü kopyala';
+  const selectAllLabel = (t.record as any).selectAll ?? 'Tümünü seç';
+  const copyHint = (t.record as any).copyHint ?? 'Ctrl/Cmd yanında sağ tık ile de kopyalayabilirsin.';
+  const exportTitle = (t.record as any).downloadsTitle ?? 'Dosya Olarak İndir';
+  const exportHint = (t.record as any).downloadsHint ?? 'TXT, MD, PDF veya DOCX olarak dışa aktar.';
+  const exportReadyLabel = (t.record as any).downloadsReady ?? 'Dosya oluşturuldu:';
 
   // Audio src for saved session
   const audioSrc = savedSessionId ? `velnot://${savedSessionId}` : null;
@@ -379,15 +631,43 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
           <h1 style={{ fontSize: '20px', fontWeight: 700 }}>{t.record.title}</h1>
           <p style={{ color: '#555', fontSize: '13px', marginTop: '2px' }}>{t.record.subtitle}</p>
         </div>
-        {isTrial && (
-          <div style={{
-            fontSize: '12px', padding: '4px 10px', borderRadius: '7px',
-            background: 'rgba(245,158,11,.1)', border: '1px solid rgba(245,158,11,.3)',
-            color: '#f59e0b', fontWeight: 600,
-          }}>
-            {t.record.trialBadge(licenseStatus!.sessionsUsed!, licenseStatus!.sessionsLimit!, licenseStatus!.daysLeft!)}
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#888' }}>
+            <span>{t.settings.transcribeLang.title}</span>
+            <select
+              value={recordingLang}
+              onChange={e => void handleRecordingLangChange(e.target.value)}
+              disabled={state === 'recording' || isProcessing}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '8px',
+                background: '#120d09',
+                border: '1px solid #2a2a2a',
+                color: '#e5e5e5',
+                fontSize: '12px',
+                outline: 'none',
+                cursor: state === 'recording' || isProcessing ? 'not-allowed' : 'pointer',
+                opacity: state === 'recording' || isProcessing ? 0.6 : 1,
+              }}
+            >
+              <option value="auto">🌐 Auto</option>
+              {LANGUAGES.map(opt => (
+                <option key={opt.code} value={opt.code}>
+                  {opt.flag} {opt.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          {isTrial && (
+            <div style={{
+              fontSize: '12px', padding: '4px 10px', borderRadius: '7px',
+              background: 'rgba(245,158,11,.1)', border: '1px solid rgba(245,158,11,.3)',
+              color: '#f59e0b', fontWeight: 600,
+            }}>
+              {t.record.trialBadge(licenseStatus!.sessionsUsed!, licenseStatus!.sessionsLimit!, licenseStatus!.daysLeft!)}
+            </div>
+          )}
+        </div>
       </div>
 
       {isExpired && (
@@ -459,7 +739,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
             {state === 'recording' && <Btn color="#ef4444" onClick={stopRecording}>{t.record.stop}</Btn>}
             {isProcessing && <Btn color="#333" onClick={() => {}} disabled>{t.record.processing}</Btn>}
             {(state === 'done' || (state === 'transcribed' && error)) && (
-              <Btn color="#374151" onClick={reset}>{t.record.newRecord}</Btn>
+              <Btn color="#374151" onClick={() => reset()}>{t.record.newRecord}</Btn>
             )}
           </div>
         </div>
@@ -469,9 +749,18 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
       {state === 'transcribed' && !error && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, minHeight: 0 }}>
           <Card title={t.record.results.transcript}>
-            <div style={{ fontSize: '13px', lineHeight: '1.75', color: '#bbb', overflowY: 'auto', maxHeight: '240px', whiteSpace: 'pre-wrap' }}>
-              {transcript}
-            </div>
+            <textarea
+              ref={previewTranscriptRef}
+              readOnly
+              value={transcript}
+              onContextMenu={e => openCopyMenu(e, 'preview', transcript)}
+              style={{
+                width: '100%', minHeight: '220px', fontSize: '13px', lineHeight: '1.75',
+                color: '#bbb', background: 'transparent', border: 'none', outline: 'none',
+                resize: 'vertical', fontFamily: 'inherit', whiteSpace: 'pre-wrap',
+              }}
+            />
+            <div style={{ fontSize: '11px', color: '#555', marginTop: '6px' }}>{copyHint}</div>
           </Card>
 
           <div style={{ background: '#150f09', borderRadius: '14px', padding: '20px', border: '1px solid #2a1a0a' }}>
@@ -482,7 +771,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
               {MODES.map(m => (
                 <button
                   key={m.key}
-                  onClick={() => processTranscript(m.key)}
+                  onClick={() => void processTranscript(m.key)}
                   style={{
                     padding: '14px 10px', borderRadius: '10px', border: '1px solid #2a2a2a',
                     background: '#0e0a07', color: '#e5e5e5', cursor: 'pointer',
@@ -498,7 +787,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
                 </button>
               ))}
               <button
-                onClick={() => { if (window.confirm((t.record as any).discardConfirm)) reset(); }}
+                onClick={() => void handleDiscard()}
                 style={{
                   padding: '14px 10px', borderRadius: '10px', border: '1px solid #2a2a2a',
                   background: '#0e0a07', color: '#666', cursor: 'pointer',
@@ -513,6 +802,23 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
                 <span style={{ fontSize: '11px', color: '#555' }}> </span>
               </button>
             </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '14px', flexWrap: 'wrap' }}>
+              <Btn
+                color="#f97316"
+                onClick={() => {
+                  void (async () => {
+                    const saved = await finalizeSession();
+                    if (saved) setState('done');
+                  })();
+                }}
+                disabled={saveBusy || isSessionFinalized}
+              >
+                {saveBusy ? '...' : saveLabel}
+              </Btn>
+              <Btn color="#374151" onClick={() => void handleDiscard()} disabled={saveBusy}>
+                {(t.record as any).discard}
+              </Btn>
+            </div>
           </div>
         </div>
       )}
@@ -523,9 +829,11 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Card title={t.record.results.transcript}>
               <textarea
+                ref={editorTranscriptRef}
                 value={editTranscript}
                 onChange={e => setEditTranscript(e.target.value)}
                 onBlur={handleTranscriptBlur}
+                onContextMenu={e => openCopyMenu(e, 'editor', editTranscript)}
                 style={{
                   width: '100%', minHeight: '200px', fontSize: '13px', lineHeight: '1.75',
                   color: '#bbb', background: 'transparent', border: 'none',
@@ -533,6 +841,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
                 }}
               />
               {editSaving && <div style={{ fontSize: '11px', color: '#555', marginTop: '4px' }}>Kaydediliyor...</div>}
+              <div style={{ fontSize: '11px', color: '#555', marginTop: '6px' }}>{copyHint}</div>
             </Card>
 
             {/* Audio player */}
@@ -602,11 +911,69 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
               </Card>
             )}
             {state === 'done' && (
+              <Card title={exportTitle}>
+                <div style={{ fontSize: '12px', color: '#777', marginBottom: '12px', lineHeight: '1.6' }}>{exportHint}</div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {(['txt', 'md', 'pdf', 'docx'] as ExportFormat[]).map(format => (
+                    <button
+                      key={format}
+                      onClick={() => void handleExport(format)}
+                      disabled={exportingFormat !== null}
+                      style={{
+                        padding: '8px 12px', borderRadius: '8px', border: '1px solid #2a2a2a',
+                        background: '#0e0a07', color: '#ddd', fontSize: '12px', cursor: exportingFormat ? 'not-allowed' : 'pointer',
+                        opacity: exportingFormat && exportingFormat !== format ? 0.5 : 1,
+                      }}
+                    >
+                      {exportingFormat === format ? '...' : format.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+                {exportPath && (
+                  <div style={{ fontSize: '11px', color: '#4a7c59', marginTop: '12px', lineHeight: '1.6', wordBreak: 'break-all' }}>
+                    {exportReadyLabel} {exportPath}
+                  </div>
+                )}
+              </Card>
+            )}
+            {state === 'done' && (
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <Btn color="#f97316" onClick={() => void finalizeSession()} disabled={saveBusy || isSessionFinalized}>
+                  {isSessionFinalized ? t.record.savedToHistory : saveLabel}
+                </Btn>
+                <Btn color="#374151" onClick={() => void handleDiscard()} disabled={saveBusy}>
+                  {(t.record as any).discard}
+                </Btn>
+              </div>
+            )}
+            {state === 'done' && isSessionFinalized && (
               <div style={{ fontSize: '12px', color: '#4a7c59', padding: '8px 12px', background: '#0d1a0d', borderRadius: '8px', border: '1px solid #1e3a1e' }}>
                 {t.record.savedToHistory}
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {copyMenu && (
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            zIndex: 1000,
+            top: copyMenu.y,
+            left: copyMenu.x,
+            background: '#1a1a1a',
+            border: '1px solid #2a2a2a',
+            borderRadius: '8px',
+            padding: '4px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+            minWidth: '170px',
+          }}
+        >
+          <button onClick={() => void handleCopySelection()} style={ctxMenuItemStyle}>{copySelectionLabel}</button>
+          <button onClick={() => void copyToClipboard(copyMenu.allText).then(() => setCopyMenu(null))} style={ctxMenuItemStyle}>{copyAllLabel}</button>
+          <button onClick={handleSelectAll} style={ctxMenuItemStyle}>{selectAllLabel}</button>
         </div>
       )}
 
@@ -693,3 +1060,15 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
     </div>
   );
 }
+
+const ctxMenuItemStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '8px 10px',
+  border: 'none',
+  background: 'transparent',
+  color: '#e5e5e5',
+  textAlign: 'left',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  fontSize: '12px',
+};

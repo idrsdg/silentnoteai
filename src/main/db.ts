@@ -31,6 +31,15 @@ export interface Session {
 
 export type NewSession = Omit<Session, 'id' | 'created_at'>;
 
+function hasDraftTag(session: Session): boolean {
+  try {
+    const tags = JSON.parse(session.tags || '[]') as string[];
+    return Array.isArray(tags) && tags.includes('draft');
+  } catch {
+    return false;
+  }
+}
+
 // No-op: JSON storage needs no init
 export async function initDb(): Promise<void> {
   getSessionsDir();
@@ -58,6 +67,7 @@ export function getSessions(limit = 50, offset = 0): Session[] {
     .filter(Boolean) as Session[];
 
   return sessions
+    .filter(s => !hasDraftTag(s))
     .sort((a, b) => b.created_at - a.created_at)
     .slice(offset, offset + limit);
 }

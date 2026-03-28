@@ -1,5 +1,30 @@
 # 03 — Geliştirme Planı
 
+## Güncel Durum
+
+### Son Tamamlananlar
+
+- [x] Kayıt sonrası `10s+` oturumlarda live chunk transcript'i anında gösterme
+- [x] Kısa kayıtlarda son bekleyen chunk'ı önce işleyip transcript açılışını hızlandırma
+- [x] Tam transcript rafinesini arka planda sürdürme
+- [x] Speaker diarization sonucunu arka planda session'a zenginleştirme
+- [x] Record ekranına `auto + override` transkripsiyon dili seçimi ekleme
+- [x] Kayıt durunca session'ı önce `draft` olarak koruma
+- [x] Kayıt sonrası `Save / Discard` akışı ekleme
+- [x] Kayıt sonrası transcript ve üretilen belgeyi `TXT / MD / PDF / DOCX` olarak indirme
+- [x] Transcript alanlarında sağ tık ile `copy selection / copy all / select all` desteği
+- [x] Draft session'ları history listesinden gizleme
+
+### Yakın Todo
+
+- [ ] Summary çağrısı için backend warm-up / ilk istek gecikmesini azaltma
+- [ ] JSON tabanlı session depolamadan `SQLite + FTS` yapısına geçiş
+- [ ] Main process'teki sync dosya IO'ları async hale getirme
+- [ ] Kayıt sonrası belge ve transcript için çok dilli çeviri akışı
+- [ ] Export sonrası dosyayı uygulama içinden klasörde göster / aç aksiyonu
+- [ ] Transcript sonuç ekranına speaker rename akışını taşıma
+- [ ] History ve landing metinlerini yeni `draft/save/export` akışıyla hizalama
+
 ## Genel Zaman Çizelgesi
 
 ```

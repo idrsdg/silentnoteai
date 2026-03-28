@@ -74,6 +74,10 @@ export async function transcribeChunk(audioData: Buffer, language?: string): Pro
   return data.transcript;
 }
 
+export async function transcribeFast(audioData: Buffer, language?: string): Promise<string> {
+  return transcribeChunk(audioData, language);
+}
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 
 export async function generateSummary(transcript: string, mode: ProcessMode = 'summary'): Promise<AISummary> {

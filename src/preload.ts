@@ -37,6 +37,9 @@ contextBridge.exposeInMainWorld('api', {
   transcribeChunk: (audioData: ArrayBuffer, language: string) =>
     ipcRenderer.invoke('audio:transcribeChunk', audioData, language),
 
+  transcribeFast: (audioData: ArrayBuffer, language: string) =>
+    ipcRenderer.invoke('audio:transcribeFast', audioData, language),
+
   // ── Audio Storage ─────────────────────────────────────────
   saveAudio: (sessionId: string, audioData: ArrayBuffer) =>
     ipcRenderer.invoke('audio:save', sessionId, audioData),
