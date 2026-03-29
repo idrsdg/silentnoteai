@@ -69,7 +69,10 @@ export async function transcribeChunk(audioData: Buffer, language?: string): Pro
     body: audioData,
   });
 
-  if (!res.ok) throw new Error(`Chunk transkripsiyon başarısız: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: '' })) as { error?: string };
+    throw new Error(body.error || `Chunk transkripsiyon başarısız: ${res.status}`);
+  }
   const data = await res.json() as { transcript: string };
   return data.transcript;
 }

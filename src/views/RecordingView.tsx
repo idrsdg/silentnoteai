@@ -372,8 +372,11 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
       const pendingTailPromise = transcribePendingTail(lang).catch(() => '');
 
       // AssemblyAI diarization always runs fully in background
-      window.api.transcribeAudio(arrayBuffer, lang)
-        .then(async result => { await applyDiarizationResult(requestId, result); })
+      const diarizationPromise = window.api.transcribeAudio(arrayBuffer, lang)
+        .then(async result => {
+          await applyDiarizationResult(requestId, result);
+          return result;
+        })
         .catch(() => null);
 
       if (capturedLive) {
@@ -397,11 +400,33 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
               if (stateRef.current === 'transcribed') setEditTranscript(result);
               void ensureDraftSession(result);
             }
-          }).catch(() => {});
+          })
+          .catch(async () => {
+            const fallback = await diarizationPromise;
+            if (fallback?.transcript && stateRef.current !== 'done') {
+              setTranscript(fallback.transcript);
+              if (stateRef.current === 'transcribed') setEditTranscript(fallback.transcript);
+              void ensureDraftSession(fallback.transcript);
+            }
+          });
       } else {
         // Short recording: try the final unsent chunk first, then refine in background if needed.
         const immediateTranscript = await pendingTailPromise;
-        const initialTranscript = immediateTranscript || await window.api.transcribeFast(arrayBuffer, lang);
+        let initialTranscript = immediateTranscript;
+
+        if (!initialTranscript) {
+          try {
+            initialTranscript = await window.api.transcribeFast(arrayBuffer, lang);
+          } catch {
+            const fallback = await diarizationPromise;
+            initialTranscript = fallback?.transcript ?? '';
+          }
+        }
+
+        if (!initialTranscript) {
+          throw new Error('Transkripsiyon başarısız: hızlı ve fallback transcript alınamadı.');
+        }
+
         setTranscript(initialTranscript);
         setEditTranscript(initialTranscript);
         setLiveTranscript('');
@@ -415,7 +440,15 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
                 if (stateRef.current === 'transcribed') setEditTranscript(result);
                 void ensureDraftSession(result);
               }
-            }).catch(() => {});
+            })
+            .catch(async () => {
+              const fallback = await diarizationPromise;
+              if (fallback?.transcript && fallback.transcript !== initialTranscript && stateRef.current !== 'done') {
+                setTranscript(fallback.transcript);
+                if (stateRef.current === 'transcribed') setEditTranscript(fallback.transcript);
+                void ensureDraftSession(fallback.transcript);
+              }
+            });
         }
       }
     } catch (e: any) {
