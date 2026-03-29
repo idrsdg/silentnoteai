@@ -1,5 +1,5 @@
 'use strict';
-const { PNG } = require('pngjs');
+const { createCanvas } = require('canvas');
 const { imagesToIco } = require('png-to-ico');
 const fs = require('fs');
 const path = require('path');
@@ -7,55 +7,99 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'assets');
 fs.mkdirSync(OUT, { recursive: true });
 
-// Orange #f97316 → Pink #ec4899, 135° linear gradient, rounded corners
-function makeGradientBitmap(size) {
-  const data = Buffer.alloc(size * size * 4);
-  const radius = Math.round(size * 0.25); // ~25% corner radius (matches site's rx=8 on 32px)
+function drawIcon(size) {
+  const canvas = createCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+  const radius = size * 0.22;
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const idx = (size * y + x) * 4;
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, '#f97316');
+  grad.addColorStop(1, '#ec4899');
 
-      // Rounded-rect alpha: check if pixel is inside
-      const inCorner = (cx, cy) => {
-        const dx = x - cx, dy = y - cy;
-        return Math.sqrt(dx * dx + dy * dy) > radius;
-      };
-      const outside =
-        (x < radius && y < radius && inCorner(radius, radius)) ||
-        (x > size - 1 - radius && y < radius && inCorner(size - 1 - radius, radius)) ||
-        (x < radius && y > size - 1 - radius && inCorner(radius, size - 1 - radius)) ||
-        (x > size - 1 - radius && y > size - 1 - radius && inCorner(size - 1 - radius, size - 1 - radius));
+  ctx.beginPath();
+  ctx.moveTo(radius, 0);
+  ctx.lineTo(size - radius, 0);
+  ctx.quadraticCurveTo(size, 0, size, radius);
+  ctx.lineTo(size, size - radius);
+  ctx.quadraticCurveTo(size, size, size - radius, size);
+  ctx.lineTo(radius, size);
+  ctx.quadraticCurveTo(0, size, 0, size - radius);
+  ctx.lineTo(0, radius);
+  ctx.quadraticCurveTo(0, 0, radius, 0);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
 
-      if (outside) {
-        data[idx + 3] = 0; // transparent
-        continue;
-      }
+  // Draw microphone icon (white)
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+  ctx.lineCap = 'round';
 
-      // 135° linear gradient: t goes 0→1 from top-left to bottom-right
-      const t = (x + y) / (2 * (size - 1));
+  const cx = size / 2;
+  const mw = size * 0.22;  // mic body width
+  const mh = size * 0.30;  // mic body height
+  const my = size * 0.20;  // mic body top y
+  const mr = mw / 2;       // corner radius
 
-      // #f97316 (249,115,22) → #ec4899 (236,72,153)
-      data[idx]     = Math.round(249 + (236 - 249) * t); // R
-      data[idx + 1] = Math.round(115 + (72  - 115) * t); // G
-      data[idx + 2] = Math.round(22  + (153 - 22)  * t); // B
-      data[idx + 3] = 255;                                // A
-    }
-  }
-  return { width: size, height: size, data };
+  // Mic body (rounded rect)
+  ctx.beginPath();
+  ctx.moveTo(cx - mr, my + mr);
+  ctx.quadraticCurveTo(cx - mr, my, cx, my);
+  ctx.quadraticCurveTo(cx + mr, my, cx + mr, my + mr);
+  ctx.lineTo(cx + mr, my + mh - mr);
+  ctx.quadraticCurveTo(cx + mr, my + mh, cx, my + mh);
+  ctx.quadraticCurveTo(cx - mr, my + mh, cx - mr, my + mh - mr);
+  ctx.closePath();
+  ctx.fill();
+
+  // Arc around mic (stand arc)
+  const arcR = mw * 1.05;
+  const arcY = my + mh;
+  ctx.lineWidth = size * 0.055;
+  ctx.beginPath();
+  ctx.arc(cx, arcY, arcR, Math.PI, 0, true);
+  ctx.stroke();
+
+  // Stand line
+  ctx.lineWidth = size * 0.055;
+  ctx.beginPath();
+  ctx.moveTo(cx, arcY + arcR);
+  ctx.lineTo(cx, arcY + arcR + size * 0.10);
+  ctx.stroke();
+
+  // Base line
+  ctx.lineWidth = size * 0.055;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(cx - mw * 0.9, arcY + arcR + size * 0.10);
+  ctx.lineTo(cx + mw * 0.9, arcY + arcR + size * 0.10);
+  ctx.stroke();
+
+  return canvas;
+}
+
+function makeIconPng(size) {
+  return drawIcon(size).toBuffer('image/png');
+}
+
+function makeIconBitmap(size) {
+  const canvas = drawIcon(size);
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, size, size);
+  return { width: size, height: size, data: Buffer.from(imageData.data) };
 }
 
 // Save icon.png (256×256)
-const bitmap256 = makeGradientBitmap(256);
-const png = new PNG({ width: 256, height: 256 });
-bitmap256.data.copy(png.data);
-const pngBuf = PNG.sync.write(png);
-fs.writeFileSync(path.join(OUT, 'icon.png'), pngBuf);
+const png256 = makeIconPng(256);
+fs.writeFileSync(path.join(OUT, 'icon.png'), png256);
 console.log('✅ assets/icon.png oluşturuldu');
 
-// Save icon.ico (256, 48, 32, 16 — multi-size ICO)
+// Save icon.ico (256, 48, 32, 16)
 const sizes = [256, 48, 32, 16];
-const bitmaps = sizes.map(makeGradientBitmap);
-const icoBuf = imagesToIco(bitmaps);
-fs.writeFileSync(path.join(OUT, 'icon.ico'), icoBuf);
-console.log('✅ assets/icon.ico oluşturuldu (' + sizes.join('px, ') + 'px)');
+const buffers = sizes.map(makeIconBitmap);
+
+(async () => {
+  const icoBuf = await imagesToIco(buffers);
+  fs.writeFileSync(path.join(OUT, 'icon.ico'), icoBuf);
+  console.log('✅ assets/icon.ico oluşturuldu (' + sizes.join('px, ') + 'px)');
+})();

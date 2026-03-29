@@ -819,21 +819,6 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
                   <span style={{ fontSize: '11px', color: '#555' }}>{t.record.modes[m.key].desc}</span>
                 </button>
               ))}
-              <button
-                onClick={() => void handleDiscard()}
-                style={{
-                  padding: '14px 10px', borderRadius: '10px', border: '1px solid #2a2a2a',
-                  background: '#0e0a07', color: '#666', cursor: 'pointer',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-                  transition: 'border-color 0.15s, background 0.15s, color 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#ef4444'; (e.currentTarget as HTMLButtonElement).style.background = '#1a0a0a'; (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a2a'; (e.currentTarget as HTMLButtonElement).style.background = '#0e0a07'; (e.currentTarget as HTMLButtonElement).style.color = '#666'; }}
-              >
-                <span style={{ fontSize: '22px' }}>🗑</span>
-                <span style={{ fontSize: '13px', fontWeight: 600 }}>{(t.record as any).discard}</span>
-                <span style={{ fontSize: '11px', color: '#555' }}> </span>
-              </button>
             </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '14px', flexWrap: 'wrap' }}>
               <Btn
