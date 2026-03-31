@@ -1,4 +1,4 @@
-import { app, BrowserWindow, session, Tray, Menu, nativeImage, protocol, net } from 'electron';
+import { app, BrowserWindow, session, Tray, Menu, nativeImage, protocol, net, globalShortcut } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs';
 import started from 'electron-squirrel-startup';
@@ -176,6 +176,16 @@ app.on('ready', async () => {
   buildAppMenu(uiLang);
   createWindow();
   createTray();
+
+  // Global hotkey: Ctrl+Shift+R → start/stop recording from anywhere
+  globalShortcut.register('CommandOrControl+Shift+R', () => {
+    mainWindow?.webContents.send('recording:toggleHotkey');
+    if (!mainWindow?.isVisible()) {
+      mainWindow?.show();
+      mainWindow?.focus();
+    }
+  });
+
   warmupBackend();
   warmupTimer = setInterval(warmupBackend, 9 * 60 * 1000); // keep warm every 9 min (Render sleeps at 15 min)
 
@@ -200,6 +210,7 @@ app.on('activate', () => {
 app.on('before-quit', () => {
   (app as any).isQuitting = true;
   if (warmupTimer) clearInterval(warmupTimer);
+  globalShortcut.unregisterAll();
   // Force exit if normal quit hangs (pending fetch/IPC keeps process alive)
   setTimeout(() => process.exit(0), 2000).unref();
 });

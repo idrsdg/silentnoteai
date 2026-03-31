@@ -1,4 +1,4 @@
-import { ipcMain, shell, BrowserWindow } from 'electron';
+import { ipcMain, shell, BrowserWindow, app } from 'electron';
 import { buildAppMenu } from './menu';
 import { getSessions, getSession, searchSessions, deleteSession, insertSession, updateSession, getSessionsDir, NewSession, Session } from './db';
 import { getSetting, setSetting } from './settings';
@@ -145,6 +145,15 @@ export function registerIpcHandlers() {
     setSetting('account_email', '');
     setSetting('account_plan', '');
     setSetting('account_expires', '');
+  });
+
+  // ── Windows Startup ───────────────────────────────────────
+  ipcMain.handle('app:getStartup', () => {
+    return app.getLoginItemSettings().openAtLogin;
+  });
+
+  ipcMain.handle('app:setStartup', (_e, enabled: boolean) => {
+    app.setLoginItemSettings({ openAtLogin: enabled });
   });
 
   // ── Backup / Restore ──────────────────────────────────────

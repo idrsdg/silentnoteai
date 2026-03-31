@@ -18,6 +18,7 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
   const { t } = useT();
   const [language, setLanguage] = useState('tr');
   const [autoDelete, setAutoDelete] = useState(true);
+  const [startupEnabled, setStartupEnabled] = useState(false);
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [usage, setUsage] = useState<UsageInfo | null>(null);
@@ -25,7 +26,7 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
   useEffect(() => {
     window.api.getSetting('language').then(val => { if (val) setLanguage(val); });
     window.api.getSetting('auto_delete').then(val => { if (val !== null) setAutoDelete(val === 'true'); });
-    // Fetch usage info
+    (window.api as any).getStartup?.().then((v: boolean) => setStartupEnabled(!!v)).catch(() => {});
     window.api.getLicenseUsage?.().then((u: UsageInfo) => setUsage(u)).catch(() => {});
   }, []);
 
@@ -69,6 +70,29 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
 
       {/* Backup / Restore */}
       <BackupSection />
+
+      {/* Windows startup */}
+      <SettingCard title="Windows ile Başlat" desc="Bilgisayar açıldığında Velnot otomatik başlasın. Toplantıları kaçırmazsın.">
+        <div
+          onClick={() => {
+            const next = !startupEnabled;
+            setStartupEnabled(next);
+            (window.api as any).setStartup?.(next);
+          }}
+          style={{
+            width: '44px', height: '24px', borderRadius: '12px',
+            background: startupEnabled ? '#f97316' : '#333',
+            cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: '3px',
+            left: startupEnabled ? '23px' : '3px',
+            width: '18px', height: '18px', borderRadius: '9px',
+            background: '#fff', transition: 'left 0.2s',
+          }} />
+        </div>
+      </SettingCard>
 
       {/* Auto delete */}
       <SettingCard title={t.settings.autoDelete.title} desc={t.settings.autoDelete.desc}>

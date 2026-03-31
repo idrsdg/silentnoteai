@@ -61,6 +61,13 @@ contextBridge.exposeInMainWorld('api', {
   getLicenseUsage: () =>
     ipcRenderer.invoke('license:getUsage'),
 
+  // ── App settings ──────────────────────────────────────────
+  getStartup: () =>
+    ipcRenderer.invoke('app:getStartup'),
+
+  setStartup: (enabled: boolean) =>
+    ipcRenderer.invoke('app:setStartup', enabled),
+
   // ── Backup / Restore ──────────────────────────────────────
   exportBackup: () =>
     ipcRenderer.invoke('db:exportBackup'),
@@ -86,6 +93,12 @@ contextBridge.exposeInMainWorld('api', {
     const handler = (_: Electron.IpcRendererEvent, view: string) => cb(view);
     ipcRenderer.on('menu:navigate', handler);
     return () => ipcRenderer.removeListener('menu:navigate', handler);
+  },
+
+  onRecordingHotkey: (cb: () => void) => {
+    const handler = (_: Electron.IpcRendererEvent) => cb();
+    ipcRenderer.on('recording:toggleHotkey', handler);
+    return () => ipcRenderer.removeListener('recording:toggleHotkey', handler);
   },
 
   // ── Auth (Magic Link) ─────────────────────────────────────
