@@ -61,6 +61,9 @@ export default function HistoryView() {
   // Audio ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Debounce ref for auto-save on blur (Bug Fix 5)
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const load = useCallback(async (q = '') => {
     setLoading(true);
     try {
@@ -138,9 +141,15 @@ export default function HistoryView() {
 
   const handleSave = () => doSave();
 
-  // Auto-save on blur
-  const handleTitleBlur = () => doSave();
-  const handleTranscriptBlur = () => doSave();
+  // Auto-save on blur — debounced to prevent double-save when tabbing (Bug Fix 5)
+  const handleTitleBlur = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => doSave(), 150);
+  };
+  const handleTranscriptBlur = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => doSave(), 150);
+  };
 
   // Speaker map change
   const handleSpeakerNameChange = (code: string, name: string) => {
@@ -164,8 +173,8 @@ export default function HistoryView() {
     setExporting(true);
     setExportPath('');
     try {
-      const summaryArr: string[] = JSON.parse(selectedSession.summary || '[]');
-      const actionsArr: ActionItem[] = JSON.parse(selectedSession.action_items || '[]');
+      const summaryArr: string[] = (() => { try { return JSON.parse(selectedSession.summary || '[]'); } catch { return []; } })();
+      const actionsArr: ActionItem[] = (() => { try { return JSON.parse(selectedSession.action_items || '[]'); } catch { return []; } })();
       const filePath = await window.api.exportSession({
         title: editTitle,
         date: selectedSession.created_at,
@@ -239,7 +248,7 @@ export default function HistoryView() {
               {search ? t.history.noResults : t.history.empty}
             </div>
           ) : sessions.map(s => {
-            const summaryArr: string[] = JSON.parse(s.summary || '[]');
+            const summaryArr: string[] = (() => { try { return JSON.parse(s.summary || '[]'); } catch { return []; } })();
             return (
               <div
                 key={s.id}
@@ -278,8 +287,8 @@ export default function HistoryView() {
 
       {/* Detail */}
       {selectedSession && (() => {
-        const summaryArr: string[] = JSON.parse(selectedSession.summary || '[]');
-        const actionsArr: ActionItem[] = JSON.parse(selectedSession.action_items || '[]');
+        const summaryArr: string[] = (() => { try { return JSON.parse(selectedSession.summary || '[]'); } catch { return []; } })();
+        const actionsArr: ActionItem[] = (() => { try { return JSON.parse(selectedSession.action_items || '[]'); } catch { return []; } })();
         const utterances: Utterance[] = (() => {
           try { return selectedSession.utterances ? JSON.parse(selectedSession.utterances) : []; }
           catch { return []; }

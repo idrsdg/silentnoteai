@@ -1,9 +1,11 @@
 import { ipcMain, shell, BrowserWindow } from 'electron';
 import { buildAppMenu } from './menu';
-import { getSessions, getSession, searchSessions, deleteSession, insertSession, updateSession, NewSession, Session } from './db';
+import { getSessions, getSession, searchSessions, deleteSession, insertSession, updateSession, getSessionsDir, NewSession, Session } from './db';
 import { getSetting, setSetting } from './settings';
 import { generateSummary, transcribeBuffer, transcribeWithDiarization, transcribeChunk, transcribeFast, getUsage, ProcessMode } from './ai';
-import { saveNoteAsText, saveNoteAsMarkdown, saveNoteAsDocx, saveNoteAsPdf, NoteData } from './files';
+import { saveNoteAsText, saveNoteAsMarkdown, saveNoteAsDocx, saveNoteAsPdf, exportBackup, importBackup, NoteData } from './files';
+import path from 'node:path';
+import fs from 'node:fs';
 import { saveSessionAudio } from './audio';
 import { getLicenseStatus, activateLicense } from './license';
 
@@ -26,7 +28,14 @@ export function registerIpcHandlers() {
   });
 
   ipcMain.handle('db:saveSession', (_e, session: NewSession) => {
-    return insertSession(session);
+    const saved = insertSession(session);
+    // Auto-delete audio after transcription if user enabled privacy setting
+    if (getSetting('auto_delete') === 'true') {
+      try {
+        fs.unlinkSync(path.join(getSessionsDir(), `${saved.id}.webm`));
+      } catch { /* audio may not exist yet */ }
+    }
+    return saved;
   });
 
   ipcMain.handle('db:updateSession', (_e, session: Session) => {
@@ -136,6 +145,15 @@ export function registerIpcHandlers() {
     setSetting('account_email', '');
     setSetting('account_plan', '');
     setSetting('account_expires', '');
+  });
+
+  // ── Backup / Restore ──────────────────────────────────────
+  ipcMain.handle('db:exportBackup', async () => {
+    return exportBackup(getSessionsDir());
+  });
+
+  ipcMain.handle('db:importBackup', async () => {
+    return importBackup(getSessionsDir());
   });
 
   // ── Menu language rebuild ─────────────────────────────────

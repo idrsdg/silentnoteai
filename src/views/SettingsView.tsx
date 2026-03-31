@@ -67,6 +67,9 @@ export default function SettingsView({ onSaved, licenseStatus, onGetLicense }: {
         <LangDropdown value={language} onChange={setLanguage} />
       </SettingCard>
 
+      {/* Backup / Restore */}
+      <BackupSection />
+
       {/* Auto delete */}
       <SettingCard title={t.settings.autoDelete.title} desc={t.settings.autoDelete.desc}>
         <div
@@ -482,6 +485,94 @@ function LangDropdown({ value, onChange }: { value: string; onChange: (v: string
               {opt.value === value && <span style={{ marginLeft: 'auto', color: '#f97316', fontSize: '11px' }}>✓</span>}
             </button>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BackupSection() {
+  const [exportStatus, setExportStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle');
+  const [importStatus, setImportStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle');
+  const [exportMsg, setExportMsg] = useState('');
+  const [importMsg, setImportMsg] = useState('');
+
+  const doExport = async () => {
+    setExportStatus('busy');
+    setExportMsg('');
+    try {
+      const filePath = await (window.api as any).exportBackup();
+      if (filePath) {
+        setExportMsg(filePath);
+        setExportStatus('done');
+      } else {
+        setExportStatus('idle'); // cancelled
+      }
+    } catch (e: any) {
+      setExportMsg(e?.message ?? 'Hata');
+      setExportStatus('error');
+    }
+  };
+
+  const doImport = async () => {
+    setImportStatus('busy');
+    setImportMsg('');
+    try {
+      const count = await (window.api as any).importBackup();
+      if (count === -1) {
+        setImportStatus('idle'); // cancelled
+      } else {
+        setImportMsg(`${count} oturum geri yüklendi. Uygulamayı yeniden başlatın.`);
+        setImportStatus('done');
+      }
+    } catch (e: any) {
+      setImportMsg(e?.message ?? 'Hata');
+      setImportStatus('error');
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: '20px', padding: '18px 20px', background: '#150f09', borderRadius: '12px', border: '1px solid #222' }}>
+      <div style={{ fontSize: '14px', fontWeight: 600, color: '#e5e5e5', marginBottom: '4px' }}>Yedekle &amp; Geri Yükle</div>
+      <div style={{ fontSize: '12px', color: '#555', marginBottom: '14px' }}>
+        Tüm oturumlarını tek bir dosyaya yedekle veya eski yedekten geri yükle.
+      </div>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <button
+          onClick={doExport}
+          disabled={exportStatus === 'busy'}
+          style={{
+            padding: '8px 16px', borderRadius: '8px', border: 'none',
+            background: exportStatus === 'done' ? '#059669' : '#f97316',
+            color: '#fff', fontSize: '12px', fontWeight: 600,
+            cursor: exportStatus === 'busy' ? 'not-allowed' : 'pointer',
+            opacity: exportStatus === 'busy' ? 0.6 : 1,
+          }}
+        >
+          {exportStatus === 'busy' ? '...' : exportStatus === 'done' ? '✅ Yedeklendi' : '⬇ Yedek Al'}
+        </button>
+        <button
+          onClick={doImport}
+          disabled={importStatus === 'busy'}
+          style={{
+            padding: '8px 16px', borderRadius: '8px', border: '1px solid #2a2a2a',
+            background: 'transparent', color: importStatus === 'done' ? '#22c55e' : '#f97316',
+            fontSize: '12px', fontWeight: 600,
+            cursor: importStatus === 'busy' ? 'not-allowed' : 'pointer',
+            opacity: importStatus === 'busy' ? 0.6 : 1,
+          }}
+        >
+          {importStatus === 'busy' ? '...' : importStatus === 'done' ? '✅ Geri Yüklendi' : '⬆ Geri Yükle'}
+        </button>
+      </div>
+      {exportMsg && (
+        <div style={{ fontSize: '11px', marginTop: '8px', color: exportStatus === 'error' ? '#f87171' : '#4a7c59', wordBreak: 'break-all' }}>
+          {exportStatus === 'error' ? `❌ ${exportMsg}` : `✅ ${exportMsg}`}
+        </div>
+      )}
+      {importMsg && (
+        <div style={{ fontSize: '11px', marginTop: '8px', color: importStatus === 'error' ? '#f87171' : '#4a7c59' }}>
+          {importStatus === 'error' ? `❌ ${importMsg}` : `ℹ ${importMsg}`}
         </div>
       )}
     </div>

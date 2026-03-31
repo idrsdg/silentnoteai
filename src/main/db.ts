@@ -7,10 +7,20 @@ import path from 'node:path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 
-function getSessionsDir(): string {
+export function getSessionsDir(): string {
   const dir = path.join(app.getPath('userData'), 'sessions');
   fs.mkdirSync(dir, { recursive: true });
   return dir;
+}
+
+// ── In-memory cache ────────────────────────────────────────────────────────────
+let _sessionsCache: Session[] | null = null;
+let _cacheTime = 0;
+const CACHE_TTL = 10_000; // 10 seconds
+
+function invalidateCache() {
+  _sessionsCache = null;
+  _cacheTime = 0;
 }
 
 export interface Session {
@@ -53,23 +63,28 @@ export function insertSession(session: NewSession): Session {
     path.join(getSessionsDir(), `${id}.json`),
     JSON.stringify(s),
   );
+  invalidateCache();
   return s;
 }
 
 export function getSessions(limit = 50, offset = 0): Session[] {
-  const dir = getSessionsDir();
-  const sessions = fs.readdirSync(dir)
-    .filter(f => f.endsWith('.json'))
-    .map(f => {
-      try { return JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')) as Session; }
-      catch { return null; }
-    })
-    .filter(Boolean) as Session[];
+  const now = Date.now();
+  if (!_sessionsCache || now - _cacheTime > CACHE_TTL) {
+    const dir = getSessionsDir();
+    const all = fs.readdirSync(dir)
+      .filter(f => f.endsWith('.json'))
+      .map(f => {
+        try { return JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')) as Session; }
+        catch { return null; }
+      })
+      .filter(Boolean) as Session[];
 
-  return sessions
-    .filter(s => !hasDraftTag(s))
-    .sort((a, b) => b.created_at - a.created_at)
-    .slice(offset, offset + limit);
+    _sessionsCache = all
+      .filter(s => !hasDraftTag(s))
+      .sort((a, b) => b.created_at - a.created_at);
+    _cacheTime = now;
+  }
+  return _sessionsCache.slice(offset, offset + limit);
 }
 
 export function getSession(id: string): Session | undefined {
@@ -98,6 +113,7 @@ export function updateSession(session: Session): Session {
     path.join(getSessionsDir(), `${session.id}.json`),
     JSON.stringify(session),
   );
+  invalidateCache();
   return session;
 }
 
@@ -108,4 +124,5 @@ export function deleteSession(id: string): void {
   try {
     fs.unlinkSync(path.join(getSessionsDir(), `${id}.webm`));
   } catch { /* ses dosyası yoksa sessiz geç */ }
+  invalidateCache();
 }

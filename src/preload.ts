@@ -61,6 +61,13 @@ contextBridge.exposeInMainWorld('api', {
   getLicenseUsage: () =>
     ipcRenderer.invoke('license:getUsage'),
 
+  // ── Backup / Restore ──────────────────────────────────────
+  exportBackup: () =>
+    ipcRenderer.invoke('db:exportBackup'),
+
+  importBackup: () =>
+    ipcRenderer.invoke('db:importBackup'),
+
   // ── Shell ─────────────────────────────────────────────────
   openExternal: (url: string) =>
     ipcRenderer.invoke('shell:openExternal', url),

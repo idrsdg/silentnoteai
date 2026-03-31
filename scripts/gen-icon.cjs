@@ -10,70 +10,73 @@ fs.mkdirSync(OUT, { recursive: true });
 function drawIcon(size) {
   const canvas = createCanvas(size, size);
   const ctx = canvas.getContext('2d');
-  const radius = size * 0.22;
 
+  // ── Background: orange→pink gradient, rounded square ──────────────────────
+  const r = size * 0.22;
   const grad = ctx.createLinearGradient(0, 0, size, size);
   grad.addColorStop(0, '#f97316');
   grad.addColorStop(1, '#ec4899');
 
   ctx.beginPath();
-  ctx.moveTo(radius, 0);
-  ctx.lineTo(size - radius, 0);
-  ctx.quadraticCurveTo(size, 0, size, radius);
-  ctx.lineTo(size, size - radius);
-  ctx.quadraticCurveTo(size, size, size - radius, size);
-  ctx.lineTo(radius, size);
-  ctx.quadraticCurveTo(0, size, 0, size - radius);
-  ctx.lineTo(0, radius);
-  ctx.quadraticCurveTo(0, 0, radius, 0);
+  ctx.moveTo(r, 0);
+  ctx.lineTo(size - r, 0);
+  ctx.quadraticCurveTo(size, 0, size, r);
+  ctx.lineTo(size, size - r);
+  ctx.quadraticCurveTo(size, size, size - r, size);
+  ctx.lineTo(r, size);
+  ctx.quadraticCurveTo(0, size, 0, size - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
   ctx.closePath();
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Draw microphone icon (white)
-  ctx.fillStyle = 'rgba(255,255,255,0.95)';
-  ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-  ctx.lineCap = 'round';
-
   const cx = size / 2;
-  const mw = size * 0.22;  // mic body width
-  const mh = size * 0.30;  // mic body height
-  const my = size * 0.20;  // mic body top y
-  const mr = mw / 2;       // corner radius
 
-  // Mic body (rounded rect)
-  ctx.beginPath();
-  ctx.moveTo(cx - mr, my + mr);
-  ctx.quadraticCurveTo(cx - mr, my, cx, my);
-  ctx.quadraticCurveTo(cx + mr, my, cx + mr, my + mr);
-  ctx.lineTo(cx + mr, my + mh - mr);
-  ctx.quadraticCurveTo(cx + mr, my + mh, cx, my + mh);
-  ctx.quadraticCurveTo(cx - mr, my + mh, cx - mr, my + mh - mr);
-  ctx.closePath();
-  ctx.fill();
+  // ── V letterform ───────────────────────────────────────────────────────────
+  // Two diagonal arms meeting at a sharp bottom point
+  const vTopY    = size * 0.16;
+  const vBottomY = size * 0.64;
+  const vLeftX   = size * 0.14;
+  const vRightX  = size * 0.86;
+  const sw       = size * 0.095; // stroke thickness
 
-  // Arc around mic (stand arc)
-  const arcR = mw * 1.05;
-  const arcY = my + mh;
-  ctx.lineWidth = size * 0.055;
+  ctx.strokeStyle = 'rgba(255,255,255,0.96)';
+  ctx.lineWidth   = sw;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+
   ctx.beginPath();
-  ctx.arc(cx, arcY, arcR, Math.PI, 0, true);
+  ctx.moveTo(vLeftX, vTopY);
+  ctx.lineTo(cx, vBottomY);
+  ctx.lineTo(vRightX, vTopY);
   ctx.stroke();
 
-  // Stand line
-  ctx.lineWidth = size * 0.055;
-  ctx.beginPath();
-  ctx.moveTo(cx, arcY + arcR);
-  ctx.lineTo(cx, arcY + arcR + size * 0.10);
-  ctx.stroke();
+  // ── Sound wave under the V (skip at tiny sizes) ────────────────────────────
+  if (size >= 32) {
+    const wY    = size * 0.80;
+    const wL    = size * 0.22;
+    const wR    = size * 0.78;
+    const wW    = wR - wL;
+    const amp   = size * 0.028;
+    const steps = 60;
 
-  // Base line
-  ctx.lineWidth = size * 0.055;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(cx - mw * 0.9, arcY + arcR + size * 0.10);
-  ctx.lineTo(cx + mw * 0.9, arcY + arcR + size * 0.10);
-  ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth   = size * 0.038;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+
+    ctx.beginPath();
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const x = wL + t * wW;
+      // 3-cycle sine wave; fade to zero at edges for clean ends
+      const envelope = Math.sin(t * Math.PI);
+      const y = wY - Math.sin(t * Math.PI * 6) * amp * envelope;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
 
   return canvas;
 }
