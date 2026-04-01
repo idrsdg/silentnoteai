@@ -74,6 +74,7 @@ export const translations = {
       speakers: (n: number) => `Konuşmacılar (${n})`,
       speakerHint: 'İsim gir → kaydet — transcript\'teki tüm etiketler otomatik güncellenir',
       speakerPlaceholder: (code: string) => `Konuşmacı ${code}...`,
+      speakerNames: 'Konuşmacı İsimleri', speakerLabel: (code: string) => `Konuşmacı ${code}`, namePlaceholder: 'İsim girin...',
       transcriptPlaceholder: 'Transkript burada görünecek...', export: 'Dışa Aktar', download: 'İndir',
     },
     settings: {
@@ -200,6 +201,7 @@ export const translations = {
       speakers: (n: number) => `Speakers (${n})`,
       speakerHint: 'Type name → save — all labels in transcript update automatically',
       speakerPlaceholder: (code: string) => `Speaker ${code}...`,
+      speakerNames: 'Speaker Names', speakerLabel: (code: string) => `Speaker ${code}`, namePlaceholder: 'Enter name...',
       transcriptPlaceholder: 'Transcript will appear here...', export: 'Export', download: 'Download',
     },
     settings: {
@@ -326,6 +328,8 @@ export const translations = {
       speakers: (n: number) => `Oradores (${n})`,
       speakerHint: 'Escribe nombre → guarda — todas las etiquetas en la transcripción se actualizan',
       speakerPlaceholder: (code: string) => `Orador ${code}...`,
+      speakerNames: 'Nomes dos Oradores', speakerLabel: (code: string) => `Orador ${code}`, namePlaceholder: 'Digite o nome...',
+      speakerNames: 'Nombres de Oradores', speakerLabel: (code: string) => `Orador ${code}`, namePlaceholder: 'Ingrese nombre...',
       transcriptPlaceholder: 'La transcripción aparecerá aquí...', export: 'Exportar', download: 'Descargar',
     },
     settings: {
@@ -452,6 +456,7 @@ export const translations = {
       speakers: (n: number) => `说话者 (${n})`,
       speakerHint: '输入名称 → 保存 — 转录中的所有标签自动更新',
       speakerPlaceholder: (code: string) => `说话者 ${code}...`,
+      speakerNames: '说话者姓名', speakerLabel: (code: string) => `说话者 ${code}`, namePlaceholder: '输入名称...',
       transcriptPlaceholder: '转录将显示在这里...', export: '导出', download: '下载',
     },
     settings: {
@@ -578,6 +583,7 @@ export const translations = {
       speakers: (n: number) => `المتحدثون (${n})`,
       speakerHint: 'أدخل اسمًا → احفظ — تُحدَّث جميع التسميات في النص تلقائيًا',
       speakerPlaceholder: (code: string) => `المتحدث ${code}...`,
+      speakerNames: 'أسماء المتحدثين', speakerLabel: (code: string) => `المتحدث ${code}`, namePlaceholder: 'أدخل اسمًا...',
       transcriptPlaceholder: 'سيظهر النص هنا...', export: 'تصدير', download: 'تنزيل',
     },
     settings: {
@@ -704,6 +710,7 @@ export const translations = {
       speakers: (n: number) => `वक्ता (${n})`,
       speakerHint: 'नाम टाइप करें → सेव करें — ट्रांसक्रिप्ट के सभी लेबल स्वतः अपडेट होते हैं',
       speakerPlaceholder: (code: string) => `वक्ता ${code}...`,
+      speakerNames: 'वक्ताओं के नाम', speakerLabel: (code: string) => `वक्ता ${code}`, namePlaceholder: 'नाम दर्ज करें...',
       transcriptPlaceholder: 'ट्रांसक्रिप्ट यहाँ दिखाई देगा...', export: 'निर्यात', download: 'डाउनलोड',
     },
     settings: {
@@ -830,6 +837,7 @@ export const translations = {
       speakers: (n: number) => `Intervenants (${n})`,
       speakerHint: 'Entrez un nom → enregistrez — toutes les étiquettes dans la transcription se mettent à jour',
       speakerPlaceholder: (code: string) => `Intervenant ${code}...`,
+      speakerNames: 'Noms des Intervenants', speakerLabel: (code: string) => `Intervenant ${code}`, namePlaceholder: 'Entrez un nom...',
       transcriptPlaceholder: 'La transcription apparaîtra ici...', export: 'Exporter', download: 'Télécharger',
     },
     settings: {
@@ -1082,6 +1090,7 @@ export const translations = {
       speakers: (n: number) => `Sprecher (${n})`,
       speakerHint: 'Name eingeben → speichern — alle Bezeichnungen im Transkript werden automatisch aktualisiert',
       speakerPlaceholder: (code: string) => `Sprecher ${code}...`,
+      speakerNames: 'Sprechernamen', speakerLabel: (code: string) => `Sprecher ${code}`, namePlaceholder: 'Name eingeben...',
       transcriptPlaceholder: 'Transkript wird hier angezeigt...', export: 'Exportieren', download: 'Herunterladen',
     },
     settings: {
@@ -1203,6 +1212,12 @@ export const translations = {
       noResults: 'Ничего не найдено', empty: 'Нет записей',
       untitled: 'Без названия', delete: 'Удалить', save: 'Сохранить',
       summary: 'Резюме', actions: 'Действия', transcript: 'Транскрипт',
+      open: 'Открыть', audioRecording: 'Аудиозапись', speakerTimeline: 'Хронология спикеров',
+      speakers: (n: number) => `Спикеры (${n})`,
+      speakerHint: 'Введите имя → сохраните — все метки в транскрипте обновятся автоматически',
+      speakerPlaceholder: (code: string) => `Спикер ${code}...`,
+      speakerNames: 'Имена спикеров', speakerLabel: (code: string) => `Спикер ${code}`, namePlaceholder: 'Введите имя...',
+      transcriptPlaceholder: 'Транскрипт появится здесь...', export: 'Экспорт', download: 'Скачать',
     },
     settings: {
       title: 'Настройки', subtitle: 'Конфигурация приложения',
@@ -1324,6 +1339,12 @@ export const translations = {
       noResults: '結果なし', empty: '録音なし',
       untitled: '無題', delete: '削除', save: '保存',
       summary: '要約', actions: 'アクション', transcript: '文字起こし',
+      open: '開く', audioRecording: '音声録音', speakerTimeline: '話者タイムライン',
+      speakers: (n: number) => `話者 (${n})`,
+      speakerHint: '名前を入力 → 保存 — トランスクリプト内のすべてのラベルが自動更新されます',
+      speakerPlaceholder: (code: string) => `話者 ${code}...`,
+      speakerNames: '話者名', speakerLabel: (code: string) => `話者 ${code}`, namePlaceholder: '名前を入力...',
+      transcriptPlaceholder: '文字起こしがここに表示されます...', export: 'エクスポート', download: 'ダウンロード',
     },
     settings: {
       title: '設定', subtitle: 'アプリケーション設定',
@@ -1445,6 +1466,12 @@ export const translations = {
       noResults: 'Tidak ada hasil', empty: 'Belum ada rekaman',
       untitled: 'Tanpa judul', delete: 'Hapus', save: 'Simpan',
       summary: 'Ringkasan', actions: 'Tindakan', transcript: 'Transkrip',
+      open: 'Buka', audioRecording: 'Rekaman Audio', speakerTimeline: 'Linimasa Pembicara',
+      speakers: (n: number) => `Pembicara (${n})`,
+      speakerHint: 'Ketik nama → simpan — semua label dalam transkrip diperbarui otomatis',
+      speakerPlaceholder: (code: string) => `Pembicara ${code}...`,
+      speakerNames: 'Nama Pembicara', speakerLabel: (code: string) => `Pembicara ${code}`, namePlaceholder: 'Masukkan nama...',
+      transcriptPlaceholder: 'Transkrip akan muncul di sini...', export: 'Ekspor', download: 'Unduh',
     },
     settings: {
       title: 'Pengaturan', subtitle: 'Konfigurasi aplikasi',
@@ -1566,6 +1593,12 @@ export const translations = {
       noResults: '결과 없음', empty: '녹음 없음',
       untitled: '제목 없음', delete: '삭제', save: '저장',
       summary: '요약', actions: '작업', transcript: '전사',
+      open: '열기', audioRecording: '오디오 녹음', speakerTimeline: '발화자 타임라인',
+      speakers: (n: number) => `발화자 (${n})`,
+      speakerHint: '이름 입력 → 저장 — 트랜스크립트의 모든 레이블이 자동 업데이트됩니다',
+      speakerPlaceholder: (code: string) => `발화자 ${code}...`,
+      speakerNames: '발화자 이름', speakerLabel: (code: string) => `발화자 ${code}`, namePlaceholder: '이름 입력...',
+      transcriptPlaceholder: '트랜스크립트가 여기에 표시됩니다...', export: '내보내기', download: '다운로드',
     },
     settings: {
       title: '설정', subtitle: '애플리케이션 구성',
@@ -1687,6 +1720,12 @@ export const translations = {
       noResults: 'কোনো ফলাফল নেই', empty: 'এখনো কোনো রেকর্ডিং নেই',
       untitled: 'শিরোনামহীন', delete: 'মুছুন', save: 'সংরক্ষণ করুন',
       summary: 'সারসংক্ষেপ', actions: 'কাজসমূহ', transcript: 'ট্রান্সক্রিপ্ট',
+      open: 'খুলুন', audioRecording: 'অডিও রেকর্ডিং', speakerTimeline: 'বক্তা টাইমলাইন',
+      speakers: (n: number) => `বক্তা (${n})`,
+      speakerHint: 'নাম লিখুন → সেভ করুন — ট্রান্সক্রিপ্টের সব লেবল স্বয়ংক্রিয়ভাবে আপডেট হয়',
+      speakerPlaceholder: (code: string) => `বক্তা ${code}...`,
+      speakerNames: 'বক্তার নাম', speakerLabel: (code: string) => `বক্তা ${code}`, namePlaceholder: 'নাম লিখুন...',
+      transcriptPlaceholder: 'ট্রান্সক্রিপ্ট এখানে দেখাবে...', export: 'রপ্তানি', download: 'ডাউনলোড',
     },
     settings: {
       title: 'সেটিংস', subtitle: 'অ্যাপ্লিকেশন কনফিগারেশন',

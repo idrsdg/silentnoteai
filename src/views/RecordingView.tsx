@@ -866,7 +866,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
             {audioSrc && (
               <div style={{ background: '#150f09', borderRadius: '10px', padding: '12px 14px', border: '1px solid #222' }}>
                 <div style={{ fontSize: '11px', color: '#555', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                  Ses Kaydı
+                  {t.history.audioRecording}
                 </div>
                 <audio
                   ref={audioRef}
@@ -881,7 +881,7 @@ export default function RecordingView({ licenseStatus, onSessionSaved, onGetLice
             {utterances.length > 0 && audioRef.current && (
               <div style={{ background: '#150f09', borderRadius: '10px', padding: '12px 14px', border: '1px solid #222', maxHeight: '160px', overflowY: 'auto' }}>
                 <div style={{ fontSize: '11px', color: '#555', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                  Konuşmacılar
+                  {t.history.speakerTimeline}
                 </div>
                 {utterances.map((u, i) => (
                   <div

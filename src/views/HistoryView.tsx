@@ -327,7 +327,7 @@ export default function HistoryView() {
             </div>
 
             {/* Audio player */}
-            <Section title="Ses Kaydı">
+            <Section title={t.history.audioRecording}>
               <audio
                 ref={audioRef}
                 src={audioSrc}
@@ -339,7 +339,7 @@ export default function HistoryView() {
 
             {/* Utterances for timestamp seek */}
             {utterances.length > 0 && (
-              <Section title="Konuşmacı Zaman Çizelgesi">
+              <Section title={t.history.speakerTimeline}>
                 <div style={{ maxHeight: '160px', overflowY: 'auto' }}>
                   {utterances.map((u, i) => {
                     const displayName = speakerMap[u.speaker]?.trim() || u.speaker;
@@ -362,16 +362,16 @@ export default function HistoryView() {
 
             {/* Speaker naming (only if diarization utterances exist) */}
             {speakers.length > 0 && (
-              <Section title="Konuşmacı İsimleri">
+              <Section title={t.history.speakerNames ?? 'Speaker Names'}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {speakers.map(code => (
                     <div key={code} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '12px', color: '#f97316', fontWeight: 600, minWidth: '80px' }}>
-                        Konuşmacı {code}
+                        {(t.history.speakerLabel ?? ((c: string) => `Speaker ${c}`))(code)}
                       </span>
                       <input
                         value={speakerMap[code] ?? ''}
-                        placeholder="İsim girin..."
+                        placeholder={t.history.namePlaceholder ?? 'Enter name...'}
                         onChange={e => handleSpeakerNameChange(code, e.target.value)}
                         onBlur={handleSpeakerNameBlur}
                         style={{
