@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import RecordingView from './views/RecordingView';
 import HistoryView from './views/HistoryView';
 import SettingsView from './views/SettingsView';
@@ -53,7 +53,7 @@ function AppInner() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#09090b', color: '#fafafa' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0d0b08', color: '#fafafa' }}>
       {showTour && <OnboardingModal onDone={handleTourDone} />}
 
       {/* Custom Title Bar */}
@@ -63,12 +63,12 @@ function AppInner() {
       } as React.CSSProperties & { WebkitAppRegion: string }}>
         {/* Logo section — aligns with sidebar width */}
         <div style={{
-          width: '60px', background: '#111113', borderRight: '1px solid #27272a',
+          width: '60px', background: '#120f0b', borderRight: '1px solid #2a2218',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
           <div style={{
             width: '26px', height: '26px', borderRadius: '7px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: 'linear-gradient(135deg, #f59e0b, #fb923c)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '13px',
           }}>
@@ -77,7 +77,7 @@ function AppInner() {
         </div>
         {/* App name + draggable area */}
         <div style={{
-          flex: 1, background: '#09090b',
+          flex: 1, background: '#0d0b08',
           display: 'flex', alignItems: 'center', paddingLeft: '12px',
         }}>
           <span style={{ fontSize: '12px', fontWeight: 700, color: '#52525b', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
@@ -90,7 +90,7 @@ function AppInner() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {/* Sidebar */}
       <aside style={{
-        width: '60px', background: '#111113', borderRight: '1px solid #27272a',
+        width: '60px', background: '#120f0b', borderRight: '1px solid #2a2218',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         padding: '16px 0', gap: '6px', flexShrink: 0,
       }}>
@@ -106,7 +106,7 @@ function AppInner() {
             title={t.nav.language}
             style={{
               width: '44px', height: '44px', borderRadius: '10px', border: 'none',
-              background: showLangMenu ? '#6366f1' : 'transparent',
+              background: showLangMenu ? '#f59e0b' : 'transparent',
               color: showLangMenu ? '#fff' : '#71717a',
               fontSize: '18px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -121,7 +121,7 @@ function AppInner() {
               onClick={e => e.stopPropagation()}
               style={{
                 position: 'absolute', bottom: '0', left: '52px',
-                background: '#111113', border: '1px solid #27272a', borderRadius: '10px',
+                background: '#120f0b', border: '1px solid #2a2218', borderRadius: '10px',
                 padding: '6px', minWidth: '148px', zIndex: 100,
                 boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
               }}
@@ -133,8 +133,8 @@ function AppInner() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: '8px',
                     width: '100%', padding: '7px 10px', borderRadius: '7px', border: 'none',
-                    background: lang === l.code ? 'rgba(99,102,241,0.2)' : 'transparent',
-                    color: lang === l.code ? '#a5b4fc' : '#a1a1aa',
+                    background: lang === l.code ? 'rgba(245,158,11,0.2)' : 'transparent',
+                    color: lang === l.code ? '#fde68a' : '#a1a1aa',
                     fontSize: '13px', cursor: 'pointer', textAlign: 'left',
                   }}
                 >
@@ -182,7 +182,7 @@ function NavBtn({ icon, label, active, onClick }: {
       title={label}
       style={{
         width: '44px', height: '44px', borderRadius: '10px', border: 'none',
-        background: active ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
+        background: active ? 'linear-gradient(135deg, #f59e0b, #fb923c)' : 'transparent',
         color: active ? '#fff' : '#71717a',
         fontSize: '20px', cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center',

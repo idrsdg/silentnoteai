@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useT } from '../LanguageContext';
 
 const FEATURE_STEPS = [
-  { icon: '🎙', accentColor: '#6366f1', bgColor: 'rgba(99,102,241,0.12)' },
+  { icon: '🎙', accentColor: '#f59e0b', bgColor: 'rgba(245,158,11,0.12)' },
   { icon: '✨', accentColor: '#a855f7', bgColor: 'rgba(168,85,247,0.12)' },
   { icon: '📑', accentColor: '#22c55e', bgColor: 'rgba(34,197,94,0.12)' },
 ];
@@ -47,9 +47,9 @@ export default function OnboardingModal({ onDone }: { onDone: () => void }) {
       <div style={{
         position: 'relative',
         width: '460px',
-        background: '#111113',
+        background: '#120f0b',
         borderRadius: '20px',
-        border: '1px solid #27272a',
+        border: '1px solid #2a2218',
         boxShadow: '0 32px 80px rgba(0,0,0,0.85)',
         padding: '44px 44px 36px',
         display: 'flex',
@@ -83,10 +83,10 @@ export default function OnboardingModal({ onDone }: { onDone: () => void }) {
         {isWelcome && (
           <div style={{
             width: '68px', height: '68px', borderRadius: '18px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: 'linear-gradient(135deg, #f59e0b, #fb923c)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '30px', marginBottom: '24px',
-            boxShadow: '0 8px 24px rgba(99,102,241,0.35)',
+            boxShadow: '0 8px 24px rgba(245,158,11,0.35)',
           }}>
             🎙
           </div>
@@ -143,7 +143,7 @@ export default function OnboardingModal({ onDone }: { onDone: () => void }) {
                 height: '6px',
                 width: i === step ? '22px' : '6px',
                 borderRadius: '3px',
-                background: i === step ? '#6366f1' : '#27272a',
+                background: i === step ? '#f59e0b' : '#2a2218',
                 transition: 'all 0.25s ease',
               }}
             />
@@ -157,12 +157,12 @@ export default function OnboardingModal({ onDone }: { onDone: () => void }) {
             padding: '13px 48px',
             borderRadius: '12px',
             border: 'none',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: 'linear-gradient(135deg, #f59e0b, #fb923c)',
             color: '#fff',
             fontSize: '15px',
             fontWeight: 600,
             cursor: 'pointer',
-            boxShadow: '0 6px 20px rgba(99,102,241,0.35)',
+            boxShadow: '0 6px 20px rgba(245,158,11,0.35)',
             transition: 'opacity 0.15s, transform 0.12s',
           }}
           onMouseEnter={e => {
